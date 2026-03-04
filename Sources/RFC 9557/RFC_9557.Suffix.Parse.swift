@@ -1,5 +1,5 @@
 //
-//  RFC_9557.Parse.Suffix.swift
+//  RFC_9557.Suffix.Parse.swift
 //  swift-rfc-9557
 //
 //  RFC 9557 suffix: *("[" [critical-flag] content "]")
@@ -7,7 +7,7 @@
 
 public import Parser_Primitives
 
-extension RFC_9557.Parse {
+extension RFC_9557.Suffix {
     /// Parses RFC 9557 suffix annotations.
     ///
     /// Suffix annotations are bracket-delimited groups appended to
@@ -20,14 +20,14 @@ extension RFC_9557.Parse {
     /// Returns an array of `Annotation` values, each containing the
     /// raw content bytes, whether a critical flag was present, and
     /// whether the content is a key-value tag or a timezone.
-    public struct Suffix<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
         public init() {}
     }
 }
 
-extension RFC_9557.Parse.Suffix {
+extension RFC_9557.Suffix.Parse {
     public struct Annotation: Sendable {
         /// Whether the `!` critical flag was present.
         public let critical: Bool
@@ -50,9 +50,9 @@ extension RFC_9557.Parse.Suffix {
     }
 }
 
-extension RFC_9557.Parse.Suffix: Parser.`Protocol` {
+extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
     public typealias ParseOutput = Output
-    public typealias Failure = RFC_9557.Parse.Suffix<Input>.Error
+    public typealias Failure = RFC_9557.Suffix.Parse<Input>.Error
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
