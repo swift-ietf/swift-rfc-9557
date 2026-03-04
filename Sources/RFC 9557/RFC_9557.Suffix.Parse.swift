@@ -51,7 +51,6 @@ extension RFC_9557.Suffix.Parse {
 }
 
 extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = RFC_9557.Suffix.Parse<Input>.Error
 
     @inlinable
