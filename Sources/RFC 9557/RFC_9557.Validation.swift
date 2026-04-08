@@ -1,7 +1,7 @@
 // RFC_9557.Validation.swift
 // swift-rfc-9557
 
-public import ASCII
+public import ASCII_Serializer_Primitives
 
 extension RFC_9557 {
     /// Validation rules for RFC 9557 components
