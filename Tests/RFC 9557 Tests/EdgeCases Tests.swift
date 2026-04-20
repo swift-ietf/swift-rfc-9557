@@ -9,8 +9,8 @@ import Testing
 
 @Suite("RFC_9557.Timestamp - Edge Cases: Time Zones")
 struct EdgeCasesTimeZoneTests {
-    @Test("IANA time zone case sensitivity")
-    func ianaTimeZoneCaseSensitivity() throws {
+    @Test
+    func `IANA time zone case sensitivity`() throws {
         // Time zone names are case-sensitive per spec
         let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[Europe/Paris]")
         let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[europe/paris]")
@@ -20,8 +20,8 @@ struct EdgeCasesTimeZoneTests {
         #expect(ts1.suffix?.timeZone != ts2.suffix?.timeZone)
     }
 
-    @Test("Offset time zones")
-    func offsetTimeZones() throws {
+    @Test
+    func `Offset time zones`() throws {
         let inputs = [
             ("2022-07-08T00:14:07+08:45[+08:45]", "+08:45"),
             ("2022-07-08T00:14:07-05:00[-05:00]", "-05:00"),
@@ -38,14 +38,14 @@ struct EdgeCasesTimeZoneTests {
         }
     }
 
-    @Test("Critical time zones")
-    func criticalTimeZones() throws {
+    @Test
+    func `Critical time zones`() throws {
         let ts = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[!Europe/London]")
         #expect(ts.suffix?.timeZone?.isCritical == true)
     }
 
-    @Test("Complex IANA time zone names")
-    func complexIANANames() throws {
+    @Test
+    func `Complex IANA time zone names`() throws {
         let names = [
             "America/Argentina/Buenos_Aires",
             "America/Indiana/Indianapolis",
@@ -64,8 +64,8 @@ struct EdgeCasesTimeZoneTests {
 
 @Suite("RFC_9557.Timestamp - Edge Cases: Calendar Systems")
 struct EdgeCasesCalendarTests {
-    @Test("Common calendar systems")
-    func commonCalendarSystems() throws {
+    @Test
+    func `Common calendar systems`() throws {
         let calendars = [
             "hebrew", "islamic", "buddhist", "chinese", "japanese", "gregory", "iso8601",
         ]
@@ -77,8 +77,8 @@ struct EdgeCasesCalendarTests {
         }
     }
 
-    @Test("Calendar value case sensitivity")
-    func calendarCaseSensitivity() throws {
+    @Test
+    func `Calendar value case sensitivity`() throws {
         // Values are case-sensitive per spec
         let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=Hebrew]")
         let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=hebrew]")
@@ -91,8 +91,8 @@ struct EdgeCasesCalendarTests {
 
 @Suite("RFC_9557.Timestamp - Edge Cases: Complex Suffixes")
 struct EdgeCasesComplexSuffixTests {
-    @Test("Time zone + calendar")
-    func timeZoneAndCalendar() throws {
+    @Test
+    func `Time zone + calendar`() throws {
         let input = "1996-12-19T16:39:57-08:00[America/Los_Angeles][u-ca=hebrew]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -100,8 +100,8 @@ struct EdgeCasesComplexSuffixTests {
         #expect(ts.suffix?.calendar == "hebrew")
     }
 
-    @Test("Time zone + calendar + custom tags")
-    func timeZoneCalendarCustomTags() throws {
+    @Test
+    func `Time zone + calendar + custom tags`() throws {
         let input = "2022-07-08T00:14:07Z[Europe/Paris][u-ca=gregory][foo=bar][baz=qux]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -110,8 +110,8 @@ struct EdgeCasesComplexSuffixTests {
         #expect(ts.suffix?.tags.count == 2)
     }
 
-    @Test("Multi-value suffix tags")
-    func multiValueSuffixTags() throws {
+    @Test
+    func `Multi-value suffix tags`() throws {
         let input = "2022-07-08T00:14:07Z[foo=bar-baz-qux]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -119,8 +119,8 @@ struct EdgeCasesComplexSuffixTests {
         #expect(ts.suffix?.tags.first?.values == ["bar", "baz", "qux"])
     }
 
-    @Test("Critical and elective tags mixed")
-    func criticalAndElectiveMixed() throws {
+    @Test
+    func `Critical and elective tags mixed`() throws {
         let input = "2022-07-08T00:14:07Z[!u-ca=hebrew][foo=bar]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -129,8 +129,8 @@ struct EdgeCasesComplexSuffixTests {
         #expect(ts.suffix?.tags.first?.critical == false)
     }
 
-    @Test("Maximum complexity suffix")
-    func maxComplexitySuffix() throws {
+    @Test
+    func `Maximum complexity suffix`() throws {
         let input =
             "1996-12-19T16:39:57-08:00[!America/Los_Angeles][!u-ca=hebrew][foo=bar-baz][qux=test]"
         let ts = try RFC_9557.Timestamp(input)
@@ -144,8 +144,8 @@ struct EdgeCasesComplexSuffixTests {
 
 @Suite("RFC_9557.Timestamp - Edge Cases: RFC 3339 Compatibility")
 struct EdgeCasesRFC3339CompatibilityTests {
-    @Test("Plain RFC 3339 timestamps (backward compatible)")
-    func plainRFC3339() throws {
+    @Test
+    func `Plain RFC 3339 timestamps (backward compatible)`() throws {
         let inputs = [
             "1996-12-19T16:39:57-08:00",
             "2022-07-08T00:14:07Z",
@@ -159,8 +159,8 @@ struct EdgeCasesRFC3339CompatibilityTests {
         }
     }
 
-    @Test("Fractional seconds with suffix")
-    func fractionalSecondsWithSuffix() throws {
+    @Test
+    func `Fractional seconds with suffix`() throws {
         let input = "1985-04-12T23:20:50.52Z[America/New_York]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -168,8 +168,8 @@ struct EdgeCasesRFC3339CompatibilityTests {
         #expect(ts.suffix?.timeZone?.identifier == "America/New_York")
     }
 
-    @Test("Leap second with suffix")
-    func leapSecondWithSuffix() throws {
+    @Test
+    func `Leap second with suffix`() throws {
         let input = "1990-12-31T23:59:60Z[UTC]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -177,8 +177,8 @@ struct EdgeCasesRFC3339CompatibilityTests {
         #expect(ts.suffix?.timeZone?.identifier == "UTC")
     }
 
-    @Test("Z offset with time zone (no inconsistency)")
-    func zOffsetWithTimeZone() throws {
+    @Test
+    func `Z offset with time zone (no inconsistency)`() throws {
         // Per spec: Z indicates UTC time known, local offset unknown
         // Adding a time zone is not an inconsistency
         let input = "2022-07-08T00:14:07Z[Europe/Paris]"
@@ -191,15 +191,15 @@ struct EdgeCasesRFC3339CompatibilityTests {
 
 @Suite("RFC_9557.Timestamp - Edge Cases: Minimal Inputs")
 struct EdgeCasesMinimalInputTests {
-    @Test("Single character time zone")
-    func singleCharTimeZone() throws {
+    @Test
+    func `Single character time zone`() throws {
         let input = "2022-07-08T00:14:07Z[Z]"
         let ts = try RFC_9557.Timestamp(input)
         #expect(ts.suffix?.timeZone?.identifier == "Z")
     }
 
-    @Test("Single character key and value")
-    func singleCharKeyValue() throws {
+    @Test
+    func `Single character key and value`() throws {
         let input = "2022-07-08T00:14:07Z[a=b]"
         let ts = try RFC_9557.Timestamp(input)
         #expect(ts.suffix?.tags.first?.key == "a")

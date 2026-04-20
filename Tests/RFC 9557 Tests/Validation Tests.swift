@@ -9,8 +9,8 @@ import Testing
 
 @Suite("RFC_9557.Validation - Suffix Key Format")
 struct ValidationSuffixKeyTests {
-    @Test("Valid lowercase keys")
-    func validLowercaseKeys() throws {
+    @Test
+    func `Valid lowercase keys`() throws {
         try RFC_9557.Validation.validateSuffixKey("u-ca")
         try RFC_9557.Validation.validateSuffixKey("foo")
         try RFC_9557.Validation.validateSuffixKey("foo-bar")
@@ -18,16 +18,16 @@ struct ValidationSuffixKeyTests {
         try RFC_9557.Validation.validateSuffixKey("a")
     }
 
-    @Test("Valid experimental keys (underscore prefix)")
-    func validExperimentalKeys() throws {
+    @Test
+    func `Valid experimental keys (underscore prefix)`() throws {
         try RFC_9557.Validation.validateSuffixKey("_foo")
         try RFC_9557.Validation.validateSuffixKey("_bar-baz")
         try RFC_9557.Validation.validateSuffixKey("_test123")
         try RFC_9557.Validation.validateSuffixKey("_")
     }
 
-    @Test("Invalid: uppercase letters")
-    func invalidUppercase() {
+    @Test
+    func `Invalid: uppercase letters`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixKey("U-CA")
         }
@@ -36,22 +36,22 @@ struct ValidationSuffixKeyTests {
         }
     }
 
-    @Test("Invalid: starts with digit")
-    func invalidStartsWithDigit() {
+    @Test
+    func `Invalid: starts with digit`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixKey("1foo")
         }
     }
 
-    @Test("Invalid: starts with hyphen")
-    func invalidStartsWithHyphen() {
+    @Test
+    func `Invalid: starts with hyphen`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixKey("-foo")
         }
     }
 
-    @Test("Invalid: contains invalid characters")
-    func invalidCharacters() {
+    @Test
+    func `Invalid: contains invalid characters`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixKey("foo@bar")
         }
@@ -63,15 +63,15 @@ struct ValidationSuffixKeyTests {
         }
     }
 
-    @Test("Invalid: empty key")
-    func invalidEmpty() {
+    @Test
+    func `Invalid: empty key`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixKey("")
         }
     }
 
-    @Test("Experimental key detection")
-    func experimentalKeyDetection() {
+    @Test
+    func `Experimental key detection`() {
         #expect(RFC_9557.Validation.isExperimentalKey("_foo"))
         #expect(RFC_9557.Validation.isExperimentalKey("_"))
         #expect(!RFC_9557.Validation.isExperimentalKey("foo"))
@@ -81,8 +81,8 @@ struct ValidationSuffixKeyTests {
 
 @Suite("RFC_9557.Validation - Suffix Value Format")
 struct ValidationSuffixValueTests {
-    @Test("Valid alphanumeric values")
-    func validValues() throws {
+    @Test
+    func `Valid alphanumeric values`() throws {
         try RFC_9557.Validation.validateSuffixValue("hebrew")
         try RFC_9557.Validation.validateSuffixValue("iso8601")
         try RFC_9557.Validation.validateSuffixValue("ABC123")
@@ -90,15 +90,15 @@ struct ValidationSuffixValueTests {
         try RFC_9557.Validation.validateSuffixValue("1")
     }
 
-    @Test("Invalid: contains hyphens")
-    func invalidHyphens() {
+    @Test
+    func `Invalid: contains hyphens`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixValue("foo-bar")
         }
     }
 
-    @Test("Invalid: contains special characters")
-    func invalidSpecialCharacters() {
+    @Test
+    func `Invalid: contains special characters`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixValue("foo@bar")
         }
@@ -110,8 +110,8 @@ struct ValidationSuffixValueTests {
         }
     }
 
-    @Test("Invalid: empty value")
-    func invalidEmpty() {
+    @Test
+    func `Invalid: empty value`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateSuffixValue("")
         }
@@ -120,8 +120,8 @@ struct ValidationSuffixValueTests {
 
 @Suite("RFC_9557.Validation - Time Zone Name Format")
 struct ValidationTimeZoneNameTests {
-    @Test("Valid IANA time zone names")
-    func validIANANames() throws {
+    @Test
+    func `Valid IANA time zone names`() throws {
         try RFC_9557.Validation.validateTimeZoneName("America/Los_Angeles")
         try RFC_9557.Validation.validateTimeZoneName("Europe/Paris")
         try RFC_9557.Validation.validateTimeZoneName("Asia/Tokyo")
@@ -129,14 +129,14 @@ struct ValidationTimeZoneNameTests {
         try RFC_9557.Validation.validateTimeZoneName("Etc/GMT+5")
     }
 
-    @Test("Valid: names with dots and underscores")
-    func validWithDotsUnderscores() throws {
+    @Test
+    func `Valid: names with dots and underscores`() throws {
         try RFC_9557.Validation.validateTimeZoneName("America/Indiana/Knox_IN.Starke")
         try RFC_9557.Validation.validateTimeZoneName("America/Argentina/ComodRivadavia")
     }
 
-    @Test("Invalid: dot-only parts")
-    func invalidDotParts() {
+    @Test
+    func `Invalid: dot-only parts`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateTimeZoneName(".")
         }
@@ -151,8 +151,8 @@ struct ValidationTimeZoneNameTests {
         }
     }
 
-    @Test("Invalid: special characters")
-    func invalidSpecialCharacters() {
+    @Test
+    func `Invalid: special characters`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateTimeZoneName("America/Los@Angeles")
         }
@@ -161,8 +161,8 @@ struct ValidationTimeZoneNameTests {
         }
     }
 
-    @Test("Invalid: empty name")
-    func invalidEmpty() {
+    @Test
+    func `Invalid: empty name`() {
         #expect(throws: RFC_9557.Validation.ValidationError.self) {
             try RFC_9557.Validation.validateTimeZoneName("")
         }
@@ -171,13 +171,13 @@ struct ValidationTimeZoneNameTests {
 
 @Suite("RFC_9557.Validation - Registered Keys")
 struct ValidationRegisteredKeysTests {
-    @Test("u-ca is registered")
-    func ucaIsRegistered() {
+    @Test
+    func `u-ca is registered`() {
         #expect(RFC_9557.Validation.isRegisteredKey("u-ca"))
     }
 
-    @Test("Unknown keys are not registered")
-    func unknownNotRegistered() {
+    @Test
+    func `Unknown keys are not registered`() {
         #expect(!RFC_9557.Validation.isRegisteredKey("foo"))
         #expect(!RFC_9557.Validation.isRegisteredKey("bar"))
         #expect(!RFC_9557.Validation.isRegisteredKey("_experimental"))

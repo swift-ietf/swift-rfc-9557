@@ -9,8 +9,8 @@ import Testing
 
 @Suite("RFC_9557.Timestamp - Basic Parsing")
 struct TimestampBasicTests {
-    @Test("Parse RFC 3339 without suffix")
-    func parseWithoutSuffix() throws {
+    @Test
+    func `Parse RFC 3339 without suffix`() throws {
         let input = "1996-12-19T16:39:57-08:00"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -19,8 +19,8 @@ struct TimestampBasicTests {
         #expect(ts.suffix == nil)
     }
 
-    @Test("Parse with IANA time zone")
-    func parseWithIANATimeZone() throws {
+    @Test
+    func `Parse with IANA time zone`() throws {
         let input = "1996-12-19T16:39:57-08:00[America/Los_Angeles]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -28,8 +28,8 @@ struct TimestampBasicTests {
         #expect(ts.suffix?.timeZone == .iana("America/Los_Angeles", critical: false))
     }
 
-    @Test("Parse with critical IANA time zone")
-    func parseWithCriticalTimeZone() throws {
+    @Test
+    func `Parse with critical IANA time zone`() throws {
         let input = "1996-12-19T16:39:57-08:00[!America/Los_Angeles]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -37,16 +37,16 @@ struct TimestampBasicTests {
         #expect(ts.suffix?.timeZone?.isCritical == true)
     }
 
-    @Test("Parse with offset time zone")
-    func parseWithOffsetTimeZone() throws {
+    @Test
+    func `Parse with offset time zone`() throws {
         let input = "2024-01-01T00:00:00+00:00[+08:45]"
         let ts = try RFC_9557.Timestamp(input)
 
         #expect(ts.suffix?.timeZone == .offset("+08:45", critical: false))
     }
 
-    @Test("Parse with calendar system")
-    func parseWithCalendar() throws {
+    @Test
+    func `Parse with calendar system`() throws {
         let input = "2024-01-01T00:00:00Z[Asia/Jerusalem][u-ca=hebrew]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -54,8 +54,8 @@ struct TimestampBasicTests {
         #expect(ts.suffix?.calendar == "hebrew")
     }
 
-    @Test("Parse with multiple suffix tags")
-    func parseWithMultipleTags() throws {
+    @Test
+    func `Parse with multiple suffix tags`() throws {
         let input = "2024-01-01T00:00:00Z[Europe/Paris][u-ca=gregory]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -66,8 +66,8 @@ struct TimestampBasicTests {
 
 @Suite("RFC_9557.Timestamp - Examples from RFC")
 struct TimestampRFCExamplesTests {
-    @Test("Example 1: Basic timestamp with time zone")
-    func example1() throws {
+    @Test
+    func `Example 1: Basic timestamp with time zone`() throws {
         let input = "1996-12-19T16:39:57-08:00[America/Los_Angeles]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -77,8 +77,8 @@ struct TimestampRFCExamplesTests {
         #expect(ts.suffix?.timeZone?.identifier == "America/Los_Angeles")
     }
 
-    @Test("Example 2: With calendar system")
-    func example2() throws {
+    @Test
+    func `Example 2: With calendar system`() throws {
         let input = "2022-07-08T00:14:07Z[Europe/London][u-ca=iso8601]"
         let ts = try RFC_9557.Timestamp(input)
 
@@ -90,8 +90,8 @@ struct TimestampRFCExamplesTests {
 
 @Suite("RFC_9557.Timestamp - Serialization")
 struct TimestampSerializationTests {
-    @Test("Serialize without suffix")
-    func serializeWithoutSuffix() throws {
+    @Test
+    func `Serialize without suffix`() throws {
         let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
         let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
         let ts = RFC_9557.Timestamp(base: base)
@@ -100,8 +100,8 @@ struct TimestampSerializationTests {
         #expect(formatted == "1996-12-19T16:39:57-08:00")
     }
 
-    @Test("Serialize with IANA time zone")
-    func serializeWithIANATimeZone() throws {
+    @Test
+    func `Serialize with IANA time zone`() throws {
         let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
         let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
         let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: false))
@@ -111,8 +111,8 @@ struct TimestampSerializationTests {
         #expect(formatted == "1996-12-19T16:39:57-08:00[America/Los_Angeles]")
     }
 
-    @Test("Serialize with critical time zone")
-    func serializeWithCriticalTimeZone() throws {
+    @Test
+    func `Serialize with critical time zone`() throws {
         let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
         let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
         let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: true))
@@ -122,8 +122,8 @@ struct TimestampSerializationTests {
         #expect(formatted == "1996-12-19T16:39:57-08:00[!America/Los_Angeles]")
     }
 
-    @Test("Serialize with calendar system")
-    func serializeWithCalendar() throws {
+    @Test
+    func `Serialize with calendar system`() throws {
         let time = try Time(year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0)
         let base = RFC_3339.DateTime(time: time, offset: .utc)
         let suffix = RFC_9557.Suffix(
@@ -136,8 +136,8 @@ struct TimestampSerializationTests {
         #expect(formatted == "2024-01-01T00:00:00Z[Asia/Jerusalem][u-ca=hebrew]")
     }
 
-    @Test("Round-trip: parse then serialize")
-    func roundTrip() throws {
+    @Test
+    func `Round-trip: parse then serialize`() throws {
         let original = "1996-12-19T16:39:57-08:00[America/Los_Angeles]"
         let ts = try RFC_9557.Timestamp(original)
         let serialized = String(ts)
@@ -145,8 +145,8 @@ struct TimestampSerializationTests {
         #expect(serialized == original)
     }
 
-    @Test("Round-trip with calendar")
-    func roundTripWithCalendar() throws {
+    @Test
+    func `Round-trip with calendar`() throws {
         let original = "2024-01-01T00:00:00Z[Europe/Paris][u-ca=gregory]"
         let ts = try RFC_9557.Timestamp(original)
         let serialized = String(ts)
