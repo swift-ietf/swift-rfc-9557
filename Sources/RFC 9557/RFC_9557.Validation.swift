@@ -42,14 +42,24 @@ extension RFC_9557.Validation {
         }
 
         // First character: lowercase letter or underscore
-        let firstCode = ASCII.Code(first)
+        let firstCode: ASCII.Code
+        do {
+            firstCode = try ASCII.Code(first)
+        } catch {
+            throw ValidationError.invalidSuffixKey
+        }
         guard firstCode.isLowercase || firstCode == ASCII.Code.underline else {
             throw ValidationError.invalidSuffixKey
         }
 
         // Remaining: lowercase letters, digits, hyphens, underscores
         for byte in bytes {
-            let code = ASCII.Code(byte)
+            let code: ASCII.Code
+            do {
+                code = try ASCII.Code(byte)
+            } catch {
+                throw ValidationError.invalidSuffixKey
+            }
             let valid =
                 code.isLowercase || code.isDigit || code == ASCII.Code.hyphen
                 || code == ASCII.Code.underline
@@ -69,7 +79,7 @@ extension RFC_9557.Validation {
     @_transparent
     public static func isExperimentalKey<Bytes: Collection>(_ bytes: Bytes) -> Bool
     where Bytes.Element == Byte {
-        bytes.first.map { ASCII.Code($0) == ASCII.Code.underline } ?? false
+        bytes.first.map { (try? ASCII.Code($0)) == ASCII.Code.underline } ?? false
     }
 }
 
@@ -99,7 +109,12 @@ extension RFC_9557.Validation {
         }
 
         for byte in bytes {
-            let code = ASCII.Code(byte)
+            let code: ASCII.Code
+            do {
+                code = try ASCII.Code(byte)
+            } catch {
+                throw ValidationError.invalidSuffixValue
+            }
             guard code.isLetter || code.isDigit else {
                 throw ValidationError.invalidSuffixValue
             }
@@ -137,7 +152,12 @@ extension RFC_9557.Validation {
 
         for index in bytes.indices {
             let byte = bytes[index]
-            let code = ASCII.Code(byte)
+            let code: ASCII.Code
+            do {
+                code = try ASCII.Code(byte)
+            } catch {
+                throw ValidationError.invalidTimeZoneName
+            }
 
             if code == ASCII.Code.solidus {
                 // End of part - check if it's "." or ".."

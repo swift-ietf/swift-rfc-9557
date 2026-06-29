@@ -117,7 +117,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
         var index = bytes.startIndex
         while index < bytes.endIndex {
             // Find opening bracket
-            guard ASCII.Code(bytes[index]) == ASCII.Code.leftSquareBracket else {
+            guard (try? ASCII.Code(bytes[index])) == ASCII.Code.leftSquareBracket else {
                 index = bytes.index(after: index)
                 continue
             }
@@ -128,7 +128,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
             var bracketEnd: Bytes.Index? = nil
             var searchIndex = contentStart
             while searchIndex < bytes.endIndex {
-                if ASCII.Code(bytes[searchIndex]) == ASCII.Code.rightSquareBracket {
+                if (try? ASCII.Code(bytes[searchIndex])) == ASCII.Code.rightSquareBracket {
                     bracketEnd = searchIndex
                     break
                 }
@@ -146,7 +146,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
 
             // Check for critical flag
             let firstByte = content.first!
-            let critical = ASCII.Code(firstByte) == ASCII.Code.exclamationPoint
+            let critical = (try? ASCII.Code(firstByte)) == ASCII.Code.exclamationPoint
             let actualContent: Bytes.SubSequence
             if critical {
                 let afterBang = content.index(after: content.startIndex)
@@ -166,7 +166,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
             var hasEquals = false
             var equalsIndex: Bytes.Index? = nil
             for i in actualContent.indices {
-                if ASCII.Code(actualContent[i]) == ASCII.Code.equalsSign {
+                if (try? ASCII.Code(actualContent[i])) == ASCII.Code.equalsSign {
                     hasEquals = true
                     equalsIndex = i
                     break
@@ -207,7 +207,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
                 var values: [String] = []
                 var vStart = 0
                 for vi in 0..<vBytes.count {
-                    if ASCII.Code(vBytes[vi]) == ASCII.Code.hyphen {
+                    if (try? ASCII.Code(vBytes[vi])) == ASCII.Code.hyphen {
                         values.append(String(decoding: vBytes[vStart..<vi], as: UTF8.self))
                         vStart = vi &+ 1
                     }
@@ -256,7 +256,7 @@ extension RFC_9557.Suffix: Binary.ASCII.Serializable {
                 let tzString = String(decoding: actualContent, as: UTF8.self)
 
                 // Check if offset or IANA
-                let firstCharCode = ASCII.Code(actualContent[actualContent.startIndex])
+                let firstCharCode = try? ASCII.Code(actualContent[actualContent.startIndex])
                 if firstCharCode == ASCII.Code.plus || firstCharCode == ASCII.Code.hyphen {
                     timeZone = .offset(tzString, critical: critical)
                 } else {

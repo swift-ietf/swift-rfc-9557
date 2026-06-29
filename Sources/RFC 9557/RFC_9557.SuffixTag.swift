@@ -161,7 +161,12 @@ extension RFC_9557.Suffix.Tag: Binary.ASCII.Serializable {
 
         // Type-up: lift to ASCII.Code at the entry boundary so the body works
         // against ASCII.Code constants directly (RFC 9557 grammar is strict ASCII).
-        let arr = Array<ASCII.Code>(bytes)
+        let arr: [ASCII.Code]
+        do {
+            arr = try Array<ASCII.Code>(bytes)
+        } catch {
+            throw Error.invalidKey(String(decoding: bytes, as: UTF8.self))
+        }
 
         // Find key=value part (skip brackets if present)
         var startIdx = 0
