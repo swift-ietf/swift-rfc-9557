@@ -4,6 +4,7 @@
 // Tests for RFC_9557.Timestamp
 
 import Testing
+import Binary_Serializable_Primitives
 
 @testable import RFC_9557
 
