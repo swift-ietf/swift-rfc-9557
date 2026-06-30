@@ -4,7 +4,6 @@
 public import ASCII_Serializer_Primitives
 public import Binary_Serializable_Primitives
 public import Parseable_ASCII_Primitives
-public import Serializer_Primitives
 
 extension RFC_9557.Suffix {
     /// RFC 9557 suffix tag (key-value pair)
@@ -130,14 +129,32 @@ extension RFC_9557.Suffix.Tag: Hashable {}
 
 // MARK: - Serializable
 
-extension RFC_9557.Suffix.Tag: Serializable, ASCII.Serializable, Binary.Serializable {
-    /// Canonical ASCII serializer for the RFC 9557 suffix tag.
-    public static var serializer: Serializer_Primitives.Serializer.Pure<Self, [ASCII.Code]> {
-        Serializer_Primitives.Serializer.Pure { tag, buffer in
-            var bytes: [Byte] = []
-            serializeBytes(tag, into: &bytes)
-            buffer.append(contentsOf: bytes.map { ASCII.Code(unchecked: $0) })
+extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
+    /// Own `ASCII.Serializable` verb ([FAM-012]) — the RFC 9557 suffix-tag
+    /// form (`[!key=v1-v2-...]`): a critical-flag marker, the key/value
+    /// `String.utf8` projections, and literal `[` `]` `=` `-` delimiters emitted
+    /// directly on the `ASCII.Code` substrate (evergreen same-format
+    /// composition; no byte-detour). Output is identical to the Binary witness
+    /// body (`serializeBytes`).
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        _ value: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == ASCII.Code {
+        buffer.append(ASCII.Code.leftSquareBracket)
+        if value.critical {
+            buffer.append(ASCII.Code.exclamationPoint)
         }
+        buffer.append(contentsOf: value.key.utf8.map { ASCII.Code(unchecked: Byte($0)) })
+        buffer.append(ASCII.Code.equalsSign)
+        var first = true
+        for tagValue in value.values {
+            if !first {
+                buffer.append(ASCII.Code.hyphen)
+            }
+            buffer.append(contentsOf: tagValue.utf8.map { ASCII.Code(unchecked: Byte($0)) })
+            first = false
+        }
+        buffer.append(ASCII.Code.rightSquareBracket)
     }
 
     /// Explicit `Binary.Serializable` witness disambiguating the two
