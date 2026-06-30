@@ -4,7 +4,6 @@
 public import ASCII_Serializer_Primitives
 public import Binary_Serializable_Primitives
 public import Parseable_ASCII_Primitives
-public import Serializer_Primitives
 
 extension RFC_9557 {
     /// RFC 9557 extended timestamp
@@ -69,13 +68,17 @@ extension RFC_9557.Timestamp: Hashable {}
 
 // MARK: - Serializable
 
-extension RFC_9557.Timestamp: Serializable, ASCII.Serializable, Binary.Serializable {
-    /// Canonical ASCII serializer for the RFC 9557 extended timestamp.
-    public static var serializer: Serializer_Primitives.Serializer.Pure<Self, [ASCII.Code]> {
-        Serializer_Primitives.Serializer.Pure { timestamp, buffer in
-            var bytes: [Byte] = []
-            serializeBytes(timestamp, into: &bytes)
-            buffer.append(contentsOf: bytes.map { ASCII.Code(unchecked: $0) })
+extension RFC_9557.Timestamp: ASCII.Serializable, Binary.Serializable {
+    /// Own `ASCII.Serializable` verb ([FAM-012]) — the RFC 9557 extended timestamp:
+    /// the RFC 3339 base date-time followed by the optional suffix, each composed via
+    /// its re-cut sub-part verb directly into the `ASCII.Code` buffer.
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        _ value: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == ASCII.Code {
+        RFC_3339.DateTime.serialize(value.base, into: &buffer)
+        if let suffix = value.suffix {
+            RFC_9557.Suffix.serialize(suffix, into: &buffer)
         }
     }
 
@@ -88,16 +91,16 @@ extension RFC_9557.Timestamp: Serializable, ASCII.Serializable, Binary.Serializa
         serializeBytes(value, into: &buffer)
     }
 
-    /// Byte-domain serialization body. The base (rfc-3339 DateTime) and the
-    /// optional suffix serialize via their own migrated family-Codable
-    /// `.serialized` ([Byte]).
+    /// Byte-domain serialization body ([FAM-012] clause 9 — composes the same
+    /// sub-part verbs as the ASCII verb): the base (rfc-3339 DateTime) and the
+    /// optional suffix compose their re-cut `serialize(_:into:)` verbs directly.
     private static func serializeBytes<Buffer: RangeReplaceableCollection>(
         _ timestamp: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        buffer.append(contentsOf: timestamp.base.serialized)
+        RFC_3339.DateTime.serialize(timestamp.base, into: &buffer)
         if let suffix = timestamp.suffix {
-            buffer.append(contentsOf: suffix.serialized)
+            RFC_9557.Suffix.serialize(suffix, into: &buffer)
         }
     }
 }
