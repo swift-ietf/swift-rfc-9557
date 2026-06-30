@@ -2,6 +2,9 @@
 // swift-rfc-9557
 
 public import ASCII_Serializer_Primitives
+public import Binary_Serializable_Primitives
+public import Parseable_ASCII_Primitives
+public import Serializer_Primitives
 
 extension RFC_9557.Suffix {
     /// RFC 9557 suffix tag (key-value pair)
@@ -125,11 +128,30 @@ extension RFC_9557.Suffix.Tag.Error: CustomStringConvertible {
 
 extension RFC_9557.Suffix.Tag: Hashable {}
 
-// MARK: - Binary.ASCII.Serializable
+// MARK: - Serializable
 
-extension RFC_9557.Suffix.Tag: Binary.ASCII.Serializable {
+extension RFC_9557.Suffix.Tag: Serializable, ASCII.Serializable, Binary.Serializable {
+    /// Canonical ASCII serializer for the RFC 9557 suffix tag.
+    public static var serializer: Serializer_Primitives.Serializer.Pure<Self, [ASCII.Code]> {
+        Serializer_Primitives.Serializer.Pure { tag, buffer in
+            var bytes: [Byte] = []
+            serializeBytes(tag, into: &bytes)
+            buffer.append(contentsOf: bytes.map { ASCII.Code(unchecked: $0) })
+        }
+    }
+
+    /// Explicit `Binary.Serializable` witness disambiguating the two
+    /// constraint-incomparable `serialize(_:into:)` defaults.
     public static func serialize<Buffer: RangeReplaceableCollection>(
-        ascii tag: Self,
+        _ value: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == Byte {
+        serializeBytes(value, into: &buffer)
+    }
+
+    /// Byte-domain serialization body (`[key=v1-v2-...]`).
+    private static func serializeBytes<Buffer: RangeReplaceableCollection>(
+        _ tag: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
         buffer.append(ASCII.Code.leftSquareBracket)
@@ -148,12 +170,21 @@ extension RFC_9557.Suffix.Tag: Binary.ASCII.Serializable {
         }
         buffer.append(ASCII.Code.rightSquareBracket)
     }
+}
+
+// MARK: - Parseable
+
+extension RFC_9557.Suffix.Tag: ASCII.Parseable {
+    /// Creates a suffix tag by validating `string`'s UTF-8 bytes.
+    public init(_ string: some StringProtocol) throws(Error) {
+        try self.init(ascii: [Byte](string.utf8))
+    }
 
     /// Parses a suffix tag from ASCII bytes
     ///
     /// - Parameter bytes: ASCII bytes (should be "[key=value]" format)
     /// - Throws: `Error` if format is invalid
-    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void = ()) throws(Error)
+    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.emptyKey
@@ -230,8 +261,21 @@ extension RFC_9557.Suffix.Tag: Binary.ASCII.Serializable {
     }
 }
 
-extension RFC_9557.Suffix.Tag: Binary.ASCII.RawRepresentable {
+extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
     public typealias RawValue = String
+
+    /// The tag's ASCII serialization as a `String` (computed; derived from
+    /// serialization, not stored).
+    public var rawValue: String {
+        String(decoding: serialized.underlying, as: UTF8.self)
+    }
+
+    public init?(rawValue: String) { try? self.init(rawValue) }
 }
 
-extension RFC_9557.Suffix.Tag: CustomStringConvertible {}
+extension RFC_9557.Suffix.Tag: CustomStringConvertible {
+    /// The tag's ASCII serialization decoded as a `String`.
+    public var description: String {
+        String(decoding: serialized.underlying, as: UTF8.self)
+    }
+}

@@ -2,6 +2,9 @@
 // swift-rfc-9557
 
 public import ASCII_Serializer_Primitives
+public import Binary_Serializable_Primitives
+public import Parseable_ASCII_Primitives
+public import Serializer_Primitives
 
 extension RFC_9557 {
     /// RFC 9557 extended timestamp
@@ -64,17 +67,47 @@ extension RFC_9557 {
 
 extension RFC_9557.Timestamp: Hashable {}
 
-// MARK: - Binary.ASCII.Serializable
+// MARK: - Serializable
 
-extension RFC_9557.Timestamp: Binary.ASCII.Serializable {
+extension RFC_9557.Timestamp: Serializable, ASCII.Serializable, Binary.Serializable {
+    /// Canonical ASCII serializer for the RFC 9557 extended timestamp.
+    public static var serializer: Serializer_Primitives.Serializer.Pure<Self, [ASCII.Code]> {
+        Serializer_Primitives.Serializer.Pure { timestamp, buffer in
+            var bytes: [Byte] = []
+            serializeBytes(timestamp, into: &bytes)
+            buffer.append(contentsOf: bytes.map { ASCII.Code(unchecked: $0) })
+        }
+    }
+
+    /// Explicit `Binary.Serializable` witness disambiguating the two
+    /// constraint-incomparable `serialize(_:into:)` defaults.
     public static func serialize<Buffer: RangeReplaceableCollection>(
-        ascii timestamp: Self,
+        _ value: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        RFC_3339.DateTime.serialize(ascii: timestamp.base, into: &buffer)
+        serializeBytes(value, into: &buffer)
+    }
+
+    /// Byte-domain serialization body. The base (rfc-3339 DateTime) and the
+    /// optional suffix serialize via their own migrated family-Codable
+    /// `.serialized` ([Byte]).
+    private static func serializeBytes<Buffer: RangeReplaceableCollection>(
+        _ timestamp: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == Byte {
+        buffer.append(contentsOf: timestamp.base.serialized)
         if let suffix = timestamp.suffix {
-            RFC_9557.Suffix.serialize(ascii: suffix, into: &buffer)
+            buffer.append(contentsOf: suffix.serialized)
         }
+    }
+}
+
+// MARK: - Parseable
+
+extension RFC_9557.Timestamp: ASCII.Parseable {
+    /// Creates an extended timestamp by validating `string`'s UTF-8 bytes.
+    public init(_ string: some StringProtocol) throws(Error) {
+        try self.init(ascii: [Byte](string.utf8))
     }
 
     /// Parses an extended timestamp from ASCII bytes
@@ -94,7 +127,7 @@ extension RFC_9557.Timestamp: Binary.ASCII.Serializable {
     ///
     /// - Parameter bytes: ASCII byte representation
     /// - Throws: `Error` if format is invalid
-    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void = ()) throws(Error)
+    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.empty
@@ -147,8 +180,21 @@ extension RFC_9557.Timestamp: Binary.ASCII.Serializable {
     }
 }
 
-extension RFC_9557.Timestamp: Binary.ASCII.RawRepresentable {
+extension RFC_9557.Timestamp: Swift.RawRepresentable {
     public typealias RawValue = String
+
+    /// The timestamp's ASCII serialization as a `String` (computed; derived
+    /// from serialization, not stored).
+    public var rawValue: String {
+        String(decoding: serialized.underlying, as: UTF8.self)
+    }
+
+    public init?(rawValue: String) { try? self.init(rawValue) }
 }
 
-extension RFC_9557.Timestamp: CustomStringConvertible {}
+extension RFC_9557.Timestamp: CustomStringConvertible {
+    /// The timestamp's ASCII serialization decoded as a `String`.
+    public var description: String {
+        String(decoding: serialized.underlying, as: UTF8.self)
+    }
+}
