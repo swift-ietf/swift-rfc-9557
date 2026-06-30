@@ -4,7 +4,6 @@
 public import ASCII_Serializer_Primitives
 public import Binary_Serializable_Primitives
 public import Parseable_ASCII_Primitives
-public import Serializer_Primitives
 
 extension RFC_9557 {
     /// RFC 9557 suffix annotations
@@ -67,13 +66,40 @@ extension RFC_9557.Suffix: Hashable {}
 
 // MARK: - Serializable
 
-extension RFC_9557.Suffix: Serializable, ASCII.Serializable, Binary.Serializable {
-    /// Canonical ASCII serializer for the RFC 9557 suffix.
-    public static var serializer: Serializer_Primitives.Serializer.Pure<Self, [ASCII.Code]> {
-        Serializer_Primitives.Serializer.Pure { suffix, buffer in
-            var bytes: [Byte] = []
-            serializeBytes(suffix, into: &bytes)
-            buffer.append(contentsOf: bytes.map { ASCII.Code(unchecked: $0) })
+extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
+    /// Own `ASCII.Serializable` verb ([FAM-012]) — the RFC 9557 suffix form
+    /// (`[time-zone][u-ca=calendar]*suffix-tag`). The time-zone critical flag,
+    /// `identifier`, and `u-ca` calendar value are Suffix's OWN `String` leaves,
+    /// emitted directly on the `ASCII.Code` substrate with `[` `]` `=` literal
+    /// delimiters as named constants; each `Suffix.Tag` composes its own re-cut
+    /// `ASCII.Serializable` verb. Output is identical to the Binary witness body
+    /// (`serializeBytes`).
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        _ value: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == ASCII.Code {
+        // Time zone first
+        if let tz = value.timeZone {
+            buffer.append(ASCII.Code.leftSquareBracket)
+            if tz.isCritical {
+                buffer.append(ASCII.Code.exclamationPoint)
+            }
+            buffer.append(contentsOf: tz.identifier.utf8.map { ASCII.Code(unchecked: Byte($0)) })
+            buffer.append(ASCII.Code.rightSquareBracket)
+        }
+
+        // Calendar
+        if let cal = value.calendar {
+            buffer.append(ASCII.Code.leftSquareBracket)
+            buffer.append(contentsOf: "u-ca".utf8.map { ASCII.Code(unchecked: Byte($0)) })
+            buffer.append(ASCII.Code.equalsSign)
+            buffer.append(contentsOf: cal.utf8.map { ASCII.Code(unchecked: Byte($0)) })
+            buffer.append(ASCII.Code.rightSquareBracket)
+        }
+
+        // Additional tags — compose each re-cut tag's own ASCII verb
+        for tag in value.tags {
+            RFC_9557.Suffix.Tag.serialize(tag, into: &buffer)
         }
     }
 
@@ -86,8 +112,9 @@ extension RFC_9557.Suffix: Serializable, ASCII.Serializable, Binary.Serializable
         serializeBytes(value, into: &buffer)
     }
 
-    /// Byte-domain serialization body. The nested tags serialize via their own
-    /// migrated family-Codable `.serialized` ([Byte]).
+    /// Byte-domain serialization body. Each nested `Suffix.Tag` composes its own
+    /// re-cut `Binary.Serializable` verb; the time-zone/calendar `String` leaves
+    /// emit their UTF-8 directly.
     private static func serializeBytes<Buffer: RangeReplaceableCollection>(
         _ suffix: Self,
         into buffer: inout Buffer
@@ -104,14 +131,16 @@ extension RFC_9557.Suffix: Serializable, ASCII.Serializable, Binary.Serializable
 
         // Calendar
         if let cal = suffix.calendar {
-            buffer.append(contentsOf: "[u-ca=".utf8)
+            buffer.append(ASCII.Code.leftSquareBracket)
+            buffer.append(contentsOf: "u-ca".utf8)
+            buffer.append(ASCII.Code.equalsSign)
             buffer.append(contentsOf: cal.utf8)
             buffer.append(ASCII.Code.rightSquareBracket)
         }
 
-        // Additional tags
+        // Additional tags — compose each re-cut tag's own Binary verb
         for tag in suffix.tags {
-            buffer.append(contentsOf: tag.serialized)
+            RFC_9557.Suffix.Tag.serialize(tag, into: &buffer)
         }
     }
 }
