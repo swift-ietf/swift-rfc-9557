@@ -211,7 +211,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
         // against ASCII.Code constants directly (RFC 9557 grammar is strict ASCII).
         let arr: [ASCII.Code]
         do {
-            arr = try Array<ASCII.Code>(bytes)
+            arr = try [ASCII.Code](bytes)
         } catch {
             throw Error.invalidKey(String(decoding: bytes, as: UTF8.self))
         }

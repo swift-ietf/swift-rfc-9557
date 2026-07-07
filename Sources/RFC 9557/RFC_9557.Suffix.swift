@@ -42,7 +42,8 @@ extension RFC_9557 {
         public let tags: [Suffix.Tag]
 
         /// Creates a suffix WITHOUT validation
-        private init(__unchecked: Void, timeZone: TimeZone?, calendar: String?, tags: [Suffix.Tag]) {
+        private init(__unchecked: Void, timeZone: TimeZone?, calendar: String?, tags: [Suffix.Tag])
+        {
             self.timeZone = timeZone
             self.calendar = calendar
             self.tags = tags

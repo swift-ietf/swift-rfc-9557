@@ -30,7 +30,7 @@ extension RFC_9557.Validation {
     /// - Parameter key: Suffix key to validate
     /// - Throws: Error if format is invalid
     public static func validateSuffixKey(_ key: String) throws(ValidationError) {
-        try validateSuffixKey(Array<Byte>(key.utf8))
+        try validateSuffixKey([Byte](key.utf8))
     }
 
     /// Validate suffix key from bytes (authoritative)
@@ -97,12 +97,14 @@ extension RFC_9557.Validation {
     /// - Parameter value: Suffix value to validate
     /// - Throws: Error if format is invalid
     public static func validateSuffixValue(_ value: String) throws(ValidationError) {
-        try validateSuffixValue(Array<Byte>(value.utf8))
+        try validateSuffixValue([Byte](value.utf8))
     }
 
     /// Validate suffix value from bytes (authoritative)
     @inlinable
-    public static func validateSuffixValue<Bytes: Collection>(_ bytes: Bytes) throws(ValidationError)
+    public static func validateSuffixValue<Bytes: Collection>(
+        _ bytes: Bytes
+    ) throws(ValidationError)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw ValidationError.invalidSuffixValue
@@ -134,12 +136,14 @@ extension RFC_9557.Validation {
     /// - Parameter name: Time zone name to validate
     /// - Throws: Error if format is invalid
     public static func validateTimeZoneName(_ name: String) throws(ValidationError) {
-        try validateTimeZoneName(Array<Byte>(name.utf8))
+        try validateTimeZoneName([Byte](name.utf8))
     }
 
     /// Validate time zone name from bytes (authoritative)
     @inlinable
-    public static func validateTimeZoneName<Bytes: Collection>(_ bytes: Bytes) throws(ValidationError)
+    public static func validateTimeZoneName<Bytes: Collection>(
+        _ bytes: Bytes
+    ) throws(ValidationError)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw ValidationError.invalidTimeZoneName
