@@ -81,11 +81,15 @@ extension RFC_9557.Suffix {
 
             self.init(__unchecked: (), key: key, values: values, critical: critical)
         }
+    }
+}
 
-        /// Whether this is an experimental tag (key starts with underscore)
-        public var isExperimental: Bool {
-            key.hasPrefix("_")
-        }
+// MARK: - Convenience
+
+extension RFC_9557.Suffix.Tag {
+    /// Whether this is an experimental tag (key starts with underscore)
+    public var isExperimental: Bool {
+        key.hasPrefix("_")
     }
 }
 
