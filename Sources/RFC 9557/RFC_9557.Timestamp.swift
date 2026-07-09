@@ -151,7 +151,7 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
             let suffixPart = bytes[bracketIndex...]
 
             let base: RFC_3339.DateTime
-            do {
+            do throws(RFC_3339.DateTime.Error) {
                 base = try RFC_3339.DateTime(ascii: basePart)
             } catch {
                 throw Error.invalidBase(String(decoding: basePart, as: UTF8.self))
@@ -172,7 +172,7 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
         } else {
             // No suffix - parse as plain RFC 3339
             let base: RFC_3339.DateTime
-            do {
+            do throws(RFC_3339.DateTime.Error) {
                 base = try RFC_3339.DateTime(ascii: bytes)
             } catch {
                 throw Error.invalidBase(String(decoding: bytes, as: UTF8.self))

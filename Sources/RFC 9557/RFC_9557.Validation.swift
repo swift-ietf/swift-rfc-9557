@@ -43,7 +43,7 @@ extension RFC_9557.Validation {
 
         // First character: lowercase letter or underscore
         let firstCode: ASCII.Code
-        do {
+        do throws(ASCII.Code.Error) {
             firstCode = try ASCII.Code(first)
         } catch {
             throw ValidationError.invalidSuffixKey
@@ -55,7 +55,7 @@ extension RFC_9557.Validation {
         // Remaining: lowercase letters, digits, hyphens, underscores
         for byte in bytes {
             let code: ASCII.Code
-            do {
+            do throws(ASCII.Code.Error) {
                 code = try ASCII.Code(byte)
             } catch {
                 throw ValidationError.invalidSuffixKey
@@ -112,7 +112,7 @@ extension RFC_9557.Validation {
 
         for byte in bytes {
             let code: ASCII.Code
-            do {
+            do throws(ASCII.Code.Error) {
                 code = try ASCII.Code(byte)
             } catch {
                 throw ValidationError.invalidSuffixValue
@@ -157,7 +157,7 @@ extension RFC_9557.Validation {
         for index in bytes.indices {
             let byte = bytes[index]
             let code: ASCII.Code
-            do {
+            do throws(ASCII.Code.Error) {
                 code = try ASCII.Code(byte)
             } catch {
                 throw ValidationError.invalidTimeZoneName

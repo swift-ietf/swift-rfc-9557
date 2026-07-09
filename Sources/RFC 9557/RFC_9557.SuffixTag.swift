@@ -58,7 +58,7 @@ extension RFC_9557.Suffix {
                 throw Error.emptyKey
             }
 
-            do {
+            do throws(ValidationError) {
                 try RFC_9557.Validation.validateSuffixKey(key)
             } catch {
                 throw Error.invalidKey(key)
@@ -72,7 +72,7 @@ extension RFC_9557.Suffix {
                 guard !value.isEmpty else {
                     throw Error.invalidValue("")
                 }
-                do {
+                do throws(ValidationError) {
                     try RFC_9557.Validation.validateSuffixValue(value)
                 } catch {
                     throw Error.invalidValue(value)

@@ -250,7 +250,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 let key = String(decoding: keyBytes, as: UTF8.self)
 
                 // Validate key
-                do {
+                do throws(ValidationError) {
                     try RFC_9557.Validation.validateSuffixKey(key)
                 } catch {
                     throw Error.invalidKey(key)
@@ -277,7 +277,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 values.append(String(decoding: vBytes[vStart..<vBytes.count], as: UTF8.self))
 
                 for value in values {
-                    do {
+                    do throws(ValidationError) {
                         try RFC_9557.Validation.validateSuffixValue(value)
                     } catch {
                         throw Error.invalidValue(value)
@@ -322,7 +322,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 if firstCharCode == ASCII.Code.plus || firstCharCode == ASCII.Code.hyphen {
                     timeZone = .offset(tzString, critical: critical)
                 } else {
-                    do {
+                    do throws(ValidationError) {
                         try RFC_9557.Validation.validateTimeZoneName(tzString)
                     } catch {
                         throw Error.invalidTimeZoneName(tzString)
