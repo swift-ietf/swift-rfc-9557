@@ -82,8 +82,8 @@ extension RFC_9557.Validation {
 }
 
 extension RFC_9557.Validation.Test {
-    @Suite("RFC_9557.Validation - Suffix Value Format")
-    struct SuffixValue {
+    @Suite
+    struct `Suffix Value` {
         @Test
         func `Valid alphanumeric values`() throws {
             try RFC_9557.Validation.validateSuffixValue("hebrew")
@@ -123,8 +123,8 @@ extension RFC_9557.Validation.Test {
 }
 
 extension RFC_9557.Validation.Test {
-    @Suite("RFC_9557.Validation - Time Zone Name Format")
-    struct TimeZoneName {
+    @Suite
+    struct `Time Zone Name` {
         @Test
         func `Valid IANA time zone names`() throws {
             try RFC_9557.Validation.validateTimeZoneName("America/Los_Angeles")
@@ -176,8 +176,8 @@ extension RFC_9557.Validation.Test {
 }
 
 extension RFC_9557.Validation.Test {
-    @Suite("RFC_9557.Validation - Registered Keys")
-    struct RegisteredKeys {
+    @Suite
+    struct `Registered Keys` {
         @Test
         func `u-ca is registered`() {
             #expect(RFC_9557.Validation.isRegisteredKey("u-ca"))

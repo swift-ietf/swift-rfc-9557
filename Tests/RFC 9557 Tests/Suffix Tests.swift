@@ -44,8 +44,8 @@ extension RFC_9557.Suffix {
 }
 
 extension RFC_9557.Suffix.Test {
-    @Suite("RFC_9557.Suffix - Error Handling: Experimental Tags")
-    struct ErrorExperimentalTag {
+    @Suite
+    struct `Error Experimental Tag` {
         @Test
         func `Reject experimental tags in normal parse`() {
             let input = "[_foo=bar]"
@@ -57,8 +57,8 @@ extension RFC_9557.Suffix.Test {
 }
 
 extension RFC_9557.Suffix.Test {
-    @Suite("RFC_9557.Suffix - Error Handling: Invalid Formats")
-    struct ErrorInvalidFormat {
+    @Suite
+    struct `Error Invalid Format` {
         @Test
         func `Reject malformed brackets: unclosed`() {
             let input = "[Europe/Paris"
@@ -121,8 +121,8 @@ extension RFC_9557.Suffix.Test {
 }
 
 extension RFC_9557.Suffix.Test {
-    @Suite("RFC_9557.Suffix - Error Handling: Duplicate Keys")
-    struct ErrorDuplicateKey {
+    @Suite
+    struct `Error Duplicate Key` {
         @Test
         func `Duplicate u-ca tags: use first occurrence`() throws {
             let input = "2022-07-08T00:14:07Z[u-ca=chinese][u-ca=japanese]"

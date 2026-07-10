@@ -8,8 +8,8 @@ import Testing
 @testable import RFC_9557
 
 extension RFC_9557.Timestamp.Test {
-    @Suite("RFC_9557.Timestamp - Edge Cases: Time Zones")
-    struct EdgeCasesTimeZone {
+    @Suite
+    struct `Edge Cases Time Zone` {
         @Test
         func `IANA time zone case sensitivity`() throws {
             // Time zone names are case-sensitive per spec
@@ -65,8 +65,8 @@ extension RFC_9557.Timestamp.Test {
 }
 
 extension RFC_9557.Timestamp.Test {
-    @Suite("RFC_9557.Timestamp - Edge Cases: Calendar Systems")
-    struct EdgeCasesCalendar {
+    @Suite
+    struct `Edge Cases Calendar` {
         @Test
         func `Common calendar systems`() throws {
             let calendars = [
@@ -94,8 +94,8 @@ extension RFC_9557.Timestamp.Test {
 }
 
 extension RFC_9557.Timestamp.Test {
-    @Suite("RFC_9557.Timestamp - Edge Cases: Complex Suffixes")
-    struct EdgeCasesComplexSuffix {
+    @Suite
+    struct `Edge Cases Complex Suffix` {
         @Test
         func `Time zone + calendar`() throws {
             let input = "1996-12-19T16:39:57-08:00[America/Los_Angeles][u-ca=hebrew]"
@@ -149,8 +149,8 @@ extension RFC_9557.Timestamp.Test {
 }
 
 extension RFC_9557.Timestamp.Test {
-    @Suite("RFC_9557.Timestamp - Edge Cases: RFC 3339 Compatibility")
-    struct EdgeCasesRFC3339Compatibility {
+    @Suite
+    struct `Edge Cases RFC 3339 Compatibility` {
         @Test
         func `Plain RFC 3339 timestamps (backward compatible)`() throws {
             let inputs = [
@@ -198,8 +198,8 @@ extension RFC_9557.Timestamp.Test {
 }
 
 extension RFC_9557.Timestamp.Test {
-    @Suite("RFC_9557.Timestamp - Edge Cases: Minimal Inputs")
-    struct EdgeCasesMinimalInput {
+    @Suite
+    struct `Edge Cases Minimal Input` {
         @Test
         func `Single character time zone`() throws {
             let input = "2022-07-08T00:14:07Z[Z]"
