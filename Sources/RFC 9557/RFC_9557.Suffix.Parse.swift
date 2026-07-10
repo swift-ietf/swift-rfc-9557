@@ -42,16 +42,10 @@ extension RFC_9557.Suffix.Parse {
     }
 
     public typealias Output = [Annotation]
-
-    public enum Error: Swift.Error, Sendable, Equatable {
-        case expectedOpenBracket
-        case unterminatedBracket
-        case emptyBracket
-    }
 }
 
 extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
-    public typealias Failure = RFC_9557.Suffix.Parse<Input>.Error
+    public typealias Failure = __SuffixParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
