@@ -323,7 +323,9 @@ extension RFC_9557.Suffix: ASCII.Parseable {
 
                 // Check if offset or IANA
                 let firstCharByte = actualContent[actualContent.startIndex]
-                if firstCharByte == ASCII.Code.plus.byte || firstCharByte == ASCII.Code.hyphen.byte {
+                if firstCharByte == ASCII.Code.plus.byte
+                    || firstCharByte == ASCII.Code.hyphen.byte
+                {
                     timeZone = .offset(tzString, critical: critical)
                 } else {
                     do throws(RFC_9557.Validation.ValidationError) {

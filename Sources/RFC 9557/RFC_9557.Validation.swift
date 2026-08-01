@@ -35,7 +35,9 @@ extension RFC_9557.Validation {
 
     /// Validate suffix key from bytes (authoritative)
     @inlinable
-    public static func validateSuffixKey<Bytes: Swift.Collection>(_ bytes: Bytes) throws(ValidationError)
+    public static func validateSuffixKey<Bytes: Swift.Collection>(
+        _ bytes: Bytes
+    ) throws(ValidationError)
     where Bytes.Element == Byte {
         guard let first = bytes.first else {
             throw ValidationError.invalidSuffixKey
