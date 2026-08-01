@@ -56,6 +56,8 @@ extension RFC_9557 {
         ///   - calendar: Optional calendar system identifier
         ///   - tags: Additional suffix tags
         public init(timeZone: TimeZone? = nil, calendar: String? = nil, tags: [Suffix.Tag] = []) {
+            // swift-linter:disable:next unchecked call site
+            // REASON: same-package extension-init internal use — components (`TimeZone`, `Suffix.Tag`) are already-validated typed values; there is no additional invariant to check.
             self.init(__unchecked: (), timeZone: timeZone, calendar: calendar, tags: tags)
         }
     }
@@ -164,7 +166,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
     ///
     /// - Parameter bytes: ASCII byte representation (must start with '[')
     /// - Throws: `Error` if format is invalid
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.empty
@@ -179,7 +181,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
         var index = bytes.startIndex
         while index < bytes.endIndex {
             // Find opening bracket
-            guard (try? ASCII.Code(bytes[index])) == ASCII.Code.leftSquareBracket else {
+            guard bytes[index] == ASCII.Code.leftSquareBracket.byte else {
                 index = bytes.index(after: index)
                 continue
             }
@@ -190,7 +192,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
             var bracketEnd: Bytes.Index? = nil
             var searchIndex = contentStart
             while searchIndex < bytes.endIndex {
-                if (try? ASCII.Code(bytes[searchIndex])) == ASCII.Code.rightSquareBracket {
+                if bytes[searchIndex] == ASCII.Code.rightSquareBracket.byte {
                     bracketEnd = searchIndex
                     break
                 }
@@ -208,7 +210,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
 
             // Check for critical flag
             let firstByte = content.first!
-            let critical = (try? ASCII.Code(firstByte)) == ASCII.Code.exclamationPoint
+            let critical = firstByte == ASCII.Code.exclamationPoint.byte
             let actualContent: Bytes.SubSequence
             if critical {
                 let afterBang = content.index(after: content.startIndex)
@@ -228,7 +230,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
             var hasEquals = false
             var equalsIndex: Bytes.Index? = nil
             for i in actualContent.indices {
-                if (try? ASCII.Code(actualContent[i])) == ASCII.Code.equalsSign {
+                if actualContent[i] == ASCII.Code.equalsSign.byte {
                     hasEquals = true
                     equalsIndex = i
                     break
@@ -268,8 +270,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 let vBytes = Array(valueBytes)
                 var values: [String] = []
                 var vStart = 0
-                for vi in 0..<vBytes.count {
-                    if (try? ASCII.Code(vBytes[vi])) == ASCII.Code.hyphen {
+                vBytes.indices.forEach { vi in
+                    if vBytes[vi] == ASCII.Code.hyphen.byte {
                         values.append(String(decoding: vBytes[vStart..<vi], as: UTF8.self))
                         vStart = vi &+ 1
                     }
@@ -300,6 +302,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                     if !seenKeys.contains(key) {
                         tags.append(
                             RFC_9557.Suffix.Tag(
+                                // swift-linter:disable:next unchecked call site
+                                // REASON: same-package extension-init internal use — `key` and `values` were just validated above during parsing.
                                 __unchecked: (),
                                 key: key,
                                 values: values,
@@ -318,8 +322,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 let tzString = String(decoding: actualContent, as: UTF8.self)
 
                 // Check if offset or IANA
-                let firstCharCode = try? ASCII.Code(actualContent[actualContent.startIndex])
-                if firstCharCode == ASCII.Code.plus || firstCharCode == ASCII.Code.hyphen {
+                let firstCharByte = actualContent[actualContent.startIndex]
+                if firstCharByte == ASCII.Code.plus.byte || firstCharByte == ASCII.Code.hyphen.byte {
                     timeZone = .offset(tzString, critical: critical)
                 } else {
                     do throws(RFC_9557.Validation.ValidationError) {
@@ -334,6 +338,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
             index = bytes.index(after: end)
         }
 
+        // swift-linter:disable:next unchecked call site
+        // REASON: same-package extension-init internal use — `timeZone`/`calendar`/`tags` were just parsed and validated above.
         self.init(__unchecked: (), timeZone: timeZone, calendar: calendar, tags: tags)
     }
 }
@@ -347,7 +353,13 @@ extension RFC_9557.Suffix: Swift.RawRepresentable {
         String(decoding: serialized.underlying, as: UTF8.self)
     }
 
-    public init?(rawValue: String) { try? self.init(rawValue) }
+    public init?(rawValue: String) {
+        do throws(Error) {
+            try self.init(rawValue)
+        } catch {
+            return nil
+        }
+    }
 }
 
 extension RFC_9557.Suffix: CustomStringConvertible {

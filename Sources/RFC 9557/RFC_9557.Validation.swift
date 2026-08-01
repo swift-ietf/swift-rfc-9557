@@ -35,7 +35,7 @@ extension RFC_9557.Validation {
 
     /// Validate suffix key from bytes (authoritative)
     @inlinable
-    public static func validateSuffixKey<Bytes: Collection>(_ bytes: Bytes) throws(ValidationError)
+    public static func validateSuffixKey<Bytes: Swift.Collection>(_ bytes: Bytes) throws(ValidationError)
     where Bytes.Element == Byte {
         guard let first = bytes.first else {
             throw ValidationError.invalidSuffixKey
@@ -77,9 +77,9 @@ extension RFC_9557.Validation {
 
     /// Check if key is experimental (byte version)
     @_transparent
-    public static func isExperimentalKey<Bytes: Collection>(_ bytes: Bytes) -> Bool
+    public static func isExperimentalKey<Bytes: Swift.Collection>(_ bytes: Bytes) -> Bool
     where Bytes.Element == Byte {
-        bytes.first.map { (try? ASCII.Code($0)) == ASCII.Code.underline } ?? false
+        bytes.first.map { $0 == ASCII.Code.underline.byte } ?? false
     }
 }
 
@@ -102,7 +102,7 @@ extension RFC_9557.Validation {
 
     /// Validate suffix value from bytes (authoritative)
     @inlinable
-    public static func validateSuffixValue<Bytes: Collection>(
+    public static func validateSuffixValue<Bytes: Swift.Collection>(
         _ bytes: Bytes
     ) throws(ValidationError)
     where Bytes.Element == Byte {
@@ -141,7 +141,7 @@ extension RFC_9557.Validation {
 
     /// Validate time zone name from bytes (authoritative)
     @inlinable
-    public static func validateTimeZoneName<Bytes: Collection>(
+    public static func validateTimeZoneName<Bytes: Swift.Collection>(
         _ bytes: Bytes
     ) throws(ValidationError)
     where Bytes.Element == Byte {
@@ -205,16 +205,5 @@ extension RFC_9557.Validation {
     @_transparent
     public static func isRegisteredKey(_ key: String) -> Bool {
         registeredKeys.contains(key)
-    }
-}
-
-// MARK: - Validation Error
-
-extension RFC_9557.Validation {
-    /// Internal validation errors
-    public enum ValidationError: Swift.Error, Sendable {
-        case invalidSuffixKey
-        case invalidSuffixValue
-        case invalidTimeZoneName
     }
 }

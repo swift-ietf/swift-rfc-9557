@@ -57,6 +57,8 @@ extension RFC_9557 {
         ///   - base: RFC 3339 timestamp
         ///   - suffix: Optional suffix annotations
         public init(base: RFC_3339.DateTime, suffix: Suffix? = nil) {
+            // swift-linter:disable:next unchecked call site
+            // REASON: same-package extension-init internal use — `base` and `suffix` are already-validated typed values; there is no additional invariant to check.
             self.init(__unchecked: (), base: base, suffix: suffix)
         }
     }
@@ -130,19 +132,15 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
     ///
     /// - Parameter bytes: ASCII byte representation
     /// - Throws: `Error` if format is invalid
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.empty
         }
 
         // Find where RFC 3339 part ends (first '[' or end)
-        var bracketIndex: Bytes.Index? = nil
-        for index in bytes.indices {
-            if (try? ASCII.Code(bytes[index])) == ASCII.Code.leftSquareBracket {
-                bracketIndex = index
-                break
-            }
+        let bracketIndex: Bytes.Index? = bytes.indices.first { index in
+            bytes[index] == ASCII.Code.leftSquareBracket.byte
         }
 
         if let bracketIndex = bracketIndex {
@@ -158,16 +156,14 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
             }
 
             let suffix: RFC_9557.Suffix
-            do {
+            do throws(RFC_9557.Suffix.Error) {
                 suffix = try RFC_9557.Suffix(ascii: suffixPart)
-            } catch let error as RFC_9557.Suffix.Error {
-                throw Error.invalidSuffix(error)
             } catch {
-                throw Error.invalidSuffix(
-                    .malformedBrackets(String(decoding: suffixPart, as: UTF8.self))
-                )
+                throw Error.invalidSuffix(error)
             }
 
+            // swift-linter:disable:next unchecked call site
+            // REASON: same-package extension-init internal use — `base` and `suffix` were just parsed and validated above.
             self.init(__unchecked: (), base: base, suffix: suffix)
         } else {
             // No suffix - parse as plain RFC 3339
@@ -178,6 +174,8 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
                 throw Error.invalidBase(String(decoding: bytes, as: UTF8.self))
             }
 
+            // swift-linter:disable:next unchecked call site
+            // REASON: same-package extension-init internal use — `base` was just parsed and validated above.
             self.init(__unchecked: (), base: base, suffix: nil)
         }
     }
@@ -192,7 +190,13 @@ extension RFC_9557.Timestamp: Swift.RawRepresentable {
         String(decoding: serialized.underlying, as: UTF8.self)
     }
 
-    public init?(rawValue: String) { try? self.init(rawValue) }
+    public init?(rawValue: String) {
+        do throws(Error) {
+            try self.init(rawValue)
+        } catch {
+            return nil
+        }
+    }
 }
 
 extension RFC_9557.Timestamp: CustomStringConvertible {

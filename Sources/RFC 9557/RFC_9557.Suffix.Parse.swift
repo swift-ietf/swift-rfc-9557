@@ -28,24 +28,12 @@ extension RFC_9557.Suffix {
 }
 
 extension RFC_9557.Suffix.Parse {
-    public struct Annotation: Sendable {
-        /// Whether the `!` critical flag was present.
-        public let critical: Bool
-        /// The content between brackets (excluding critical flag).
-        public let content: Input
-
-        @inlinable
-        public init(critical: Bool, content: Input) {
-            self.critical = critical
-            self.content = content
-        }
-    }
-
     public typealias Output = [Annotation]
 }
 
 extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
     public typealias Failure = __SuffixParseError
+    public typealias Body = Never
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {

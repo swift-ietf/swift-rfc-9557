@@ -79,6 +79,8 @@ extension RFC_9557.Suffix {
                 }
             }
 
+            // swift-linter:disable:next unchecked call site
+            // REASON: same-package extension-init internal use — `key` and each `values` element were just validated above.
             self.init(__unchecked: (), key: key, values: values, critical: critical)
         }
     }
@@ -90,40 +92,6 @@ extension RFC_9557.Suffix.Tag {
     /// Whether this is an experimental tag (key starts with underscore)
     public var isExperimental: Bool {
         key.hasPrefix("_")
-    }
-}
-
-// MARK: - Error
-
-extension RFC_9557.Suffix.Tag {
-    /// Errors that can occur during tag validation
-    public enum Error: Swift.Error, Sendable, Equatable {
-        /// Key is empty
-        case emptyKey
-
-        /// Key format is invalid
-        case invalidKey(_ key: String)
-
-        /// Values array is empty
-        case emptyValues
-
-        /// Value format is invalid
-        case invalidValue(_ value: String)
-    }
-}
-
-extension RFC_9557.Suffix.Tag.Error: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .emptyKey:
-            return "Tag key cannot be empty"
-        case .invalidKey(let key):
-            return "Invalid tag key '\(key)'"
-        case .emptyValues:
-            return "Tag must have at least one value"
-        case .invalidValue(let value):
-            return "Invalid tag value '\(value)'"
-        }
     }
 }
 
@@ -205,7 +173,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
     ///
     /// - Parameter bytes: ASCII bytes (should be "[key=value]" format)
     /// - Throws: `Error` if format is invalid
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.emptyKey
@@ -214,7 +182,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
         // Type-up: lift to ASCII.Code at the entry boundary so the body works
         // against ASCII.Code constants directly (RFC 9557 grammar is strict ASCII).
         let arr: [ASCII.Code]
-        do {
+        do throws(ASCII.Code.Error) {
             arr = try [ASCII.Code](bytes)
         } catch {
             throw Error.invalidKey(String(decoding: bytes, as: UTF8.self))
@@ -228,7 +196,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
             startIdx = 1
         }
         if arr.last == ASCII.Code.rightSquareBracket {
-            endIdx = arr.count - 1
+            endIdx = arr.endIndex - 1
         }
 
         guard startIdx < endIdx else {
@@ -270,7 +238,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
         let vArr = Array(valueBytes)
         var values: [String] = []
         var vStart = 0
-        for vi in 0..<vArr.count {
+        vArr.indices.forEach { vi in
             if vArr[vi] == ASCII.Code.hyphen {
                 values.append(String(decoding: vArr[vStart..<vi], as: UTF8.self))
                 vStart = vi &+ 1
@@ -291,7 +259,13 @@ extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
         String(decoding: serialized.underlying, as: UTF8.self)
     }
 
-    public init?(rawValue: String) { try? self.init(rawValue) }
+    public init?(rawValue: String) {
+        do throws(Error) {
+            try self.init(rawValue)
+        } catch {
+            return nil
+        }
+    }
 }
 
 extension RFC_9557.Suffix.Tag: CustomStringConvertible {
