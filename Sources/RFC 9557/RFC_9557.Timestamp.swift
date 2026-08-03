@@ -143,7 +143,7 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
             bytes[index] == ASCII.Code.leftSquareBracket.byte
         }
 
-        if let bracketIndex = bracketIndex {
+        if let bracketIndex {
             // Has suffix - split and parse
             let basePart = bytes[..<bracketIndex]
             let suffixPart = bytes[bracketIndex...]
