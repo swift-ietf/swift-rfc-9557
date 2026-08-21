@@ -1,8 +1,3 @@
-// Validation Tests.swift
-// swift-rfc-9557
-//
-// Tests for RFC_9557.Validation
-
 import Testing
 
 @testable import RFC_9557

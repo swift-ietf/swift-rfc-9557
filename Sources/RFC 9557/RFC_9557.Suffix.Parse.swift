@@ -1,25 +1,7 @@
-//
-//  RFC_9557.Suffix.Parse.swift
-//  swift-rfc-9557
-//
-//  RFC 9557 suffix: *("[" [critical-flag] content "]")
-//
-
 public import Parser_Primitives
 
 extension RFC_9557.Suffix {
-    /// Parses RFC 9557 suffix annotations.
-    ///
-    /// Suffix annotations are bracket-delimited groups appended to
-    /// RFC 3339 timestamps.
-    ///
-    /// Each group is `[` optional `!` critical-flag, then either:
-    /// - A timezone identifier (no `=` sign)
-    /// - A key `=` value tag (values separated by `-`)
-    ///
-    /// Returns an array of `Annotation` values, each containing the
-    /// raw content bytes, whether a critical flag was present, and
-    /// whether the content is a key-value tag or a timezone.
+
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
@@ -40,7 +22,7 @@ extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
         var annotations: [Annotation] = []
 
         while input.startIndex < input.endIndex {
-            // Expect '[' (0x5B)
+
             guard input[input.startIndex] == 0x5B else {
                 break
             }
@@ -50,7 +32,6 @@ extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
                 throw .unterminatedBracket
             }
 
-            // Check for critical flag '!' (0x21)
             let critical: Bool
             if input[input.startIndex] == 0x21 {
                 critical = true
@@ -59,7 +40,6 @@ extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
                 critical = false
             }
 
-            // Consume content until ']' (0x5D)
             let contentStart = input.startIndex
             while input.startIndex < input.endIndex
                 && input[input.startIndex] != 0x5D
@@ -78,7 +58,6 @@ extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
 
             annotations.append(Annotation(critical: critical, content: content))
 
-            // Skip ']'
             input = input[input.index(after: input.startIndex)...]
         }
 

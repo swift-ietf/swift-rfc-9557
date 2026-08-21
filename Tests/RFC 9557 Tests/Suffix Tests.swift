@@ -1,8 +1,3 @@
-// Suffix Tests.swift
-// swift-rfc-9557
-//
-// Tests for RFC_9557.Suffix
-
 import Testing
 
 @testable import RFC_9557
@@ -87,12 +82,11 @@ extension RFC_9557.Suffix.Test {
 
         @Test
         func `Reject invalid suffix keys`() {
-            // Uppercase
+
             #expect(throws: RFC_9557.Suffix.Error.self) {
                 try RFC_9557.Suffix(ascii: Array("[U-CA=hebrew]".utf8))
             }
 
-            // Starts with digit
             #expect(throws: RFC_9557.Suffix.Error.self) {
                 try RFC_9557.Suffix(ascii: Array("[1foo=bar]".utf8))
             }
@@ -100,7 +94,7 @@ extension RFC_9557.Suffix.Test {
 
         @Test
         func `Reject invalid suffix values`() {
-            // Special characters
+
             #expect(throws: RFC_9557.Suffix.Error.self) {
                 try RFC_9557.Suffix(ascii: Array("[u-ca=foo@bar]".utf8))
             }
@@ -108,7 +102,7 @@ extension RFC_9557.Suffix.Test {
 
         @Test
         func `Reject invalid time zone names`() {
-            // Dot-only parts
+
             #expect(throws: RFC_9557.Suffix.Error.self) {
                 try RFC_9557.Suffix(ascii: Array("[.]".utf8))
             }
@@ -144,11 +138,9 @@ extension RFC_9557.Suffix.Test {
             let ts = try RFC_9557.Timestamp(input)
             #expect(ts.suffix?.tags.count == 3)
 
-            // foo should be first occurrence only
             let fooTag = ts.suffix?.tags.first { $0.key == "foo" }
             #expect(fooTag?.values == ["a"])
 
-            // bar and baz should be present
             #expect(ts.suffix?.tags.contains { $0.key == "bar" } == true)
             #expect(ts.suffix?.tags.contains { $0.key == "baz" } == true)
         }

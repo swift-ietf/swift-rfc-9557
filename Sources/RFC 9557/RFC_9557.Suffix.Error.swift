@@ -1,39 +1,25 @@
-// RFC_9557.Suffix.Error.swift
-// swift-rfc-9557
-
 extension RFC_9557.Suffix {
-    /// Errors that can occur during suffix parsing
-    ///
-    /// Represents validation failures when parsing RFC 9557 suffix annotations.
+
     public enum Error: Swift.Error, Sendable, Equatable {
-        /// Suffix is empty
+
         case empty
 
-        /// Unmatched or malformed brackets
         case malformedBrackets(_ value: String)
 
-        /// Empty tag content (just brackets or just "!")
         case emptyTag
 
-        /// Multiple time zones specified (only one allowed)
         case multipleTimeZones
 
-        /// Invalid suffix key format
         case invalidKey(_ key: String)
 
-        /// Invalid suffix value format
         case invalidValue(_ value: String)
 
-        /// Invalid time zone name format
         case invalidTimeZoneName(_ name: String)
 
-        /// Critical tag with unknown key must be rejected
         case criticalTagNotSupported(_ key: String)
 
-        /// Critical experimental tag in non-experimental context
         case criticalExperimentalTag(_ key: String)
 
-        /// Experimental tag in interchange context
         case experimentalTagInInterchange(_ key: String)
     }
 }

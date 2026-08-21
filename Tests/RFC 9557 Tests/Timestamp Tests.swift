@@ -1,8 +1,3 @@
-// Timestamp Tests.swift
-// swift-rfc-9557
-//
-// Tests for RFC_9557.Timestamp
-
 import Binary_Serializable_Primitives
 import Testing
 

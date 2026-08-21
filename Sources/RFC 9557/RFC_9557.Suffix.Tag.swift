@@ -1,58 +1,23 @@
-// RFC_9557.Suffix.Tag.swift
-// swift-rfc-9557
-
 public import ASCII_Serializer_Primitives
 public import Binary_Serializable_Primitives
 public import Parseable_ASCII_Primitives
 
 extension RFC_9557.Suffix {
-    /// RFC 9557 suffix tag (key-value pair)
-    ///
-    /// Represents a tagged annotation in the suffix.
-    ///
-    /// ## RFC 9557 Format
-    ///
-    /// ```
-    /// suffix-tag = "[" critical-flag suffix-key "=" suffix-value *("-" suffix-value) "]"
-    /// ```
-    ///
-    /// ## Rules
-    ///
-    /// - Keys must be lowercase
-    /// - Keys starting with `_` are experimental
-    /// - Values are case-sensitive
-    /// - Multiple values separated by hyphens
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let tag = try RFC_9557.Suffix.Tag(key: "u-ca", values: ["hebrew"], critical: false)
-    /// print(String(tag))  // "[u-ca=hebrew]"
-    /// ```
+
     public struct Tag: Sendable, Codable {
-        /// Tag key (lowercase)
+
         public let key: String
 
-        /// Tag values (case-sensitive)
         public let values: [String]
 
-        /// Whether this tag is critical
         public let critical: Bool
 
-        /// Creates a tag WITHOUT validation
         init(__unchecked: Void, key: String, values: [String], critical: Bool) {
             self.key = key
             self.values = values
             self.critical = critical
         }
 
-        /// Creates a validated suffix tag
-        ///
-        /// - Parameters:
-        ///   - key: Tag key (must be lowercase, start with letter/underscore)
-        ///   - values: Tag values (must be alphanumeric)
-        ///   - critical: Whether receiver must process this tag
-        /// - Throws: `Error` if validation fails
         public init(key: String, values: [String], critical: Bool) throws(Error) {
             guard !key.isEmpty else {
                 throw Error.emptyKey
@@ -79,35 +44,22 @@ extension RFC_9557.Suffix {
                 }
             }
 
-            // swift-linter:disable:next unchecked call site
-            // REASON: same-package extension-init internal use — `key` and each `values` element were just validated above.
             self.init(__unchecked: (), key: key, values: values, critical: critical)
         }
     }
 }
 
-// MARK: - Convenience
-
 extension RFC_9557.Suffix.Tag {
-    /// Whether this is an experimental tag (key starts with underscore)
+
     public var isExperimental: Bool {
         key.hasPrefix("_")
     }
 }
 
-// MARK: - Hashable
-
 extension RFC_9557.Suffix.Tag: Hashable {}
 
-// MARK: - Serializable
-
 extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
-    /// Own `ASCII.Serializable` verb ([FAM-012]) — the RFC 9557 suffix-tag
-    /// form (`[!key=v1-v2-...]`): a critical-flag marker, the key/value
-    /// `String.utf8` projections, and literal `[` `]` `=` `-` delimiters emitted
-    /// directly on the `ASCII.Code` substrate (evergreen same-format
-    /// composition; no byte-detour). Output is identical to the Binary witness
-    /// body (`serializeBytes`).
+
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
         into buffer: inout Buffer
@@ -129,8 +81,6 @@ extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
         buffer.append(ASCII.Code.rightSquareBracket)
     }
 
-    /// Explicit `Binary.Serializable` witness disambiguating the two
-    /// constraint-incomparable `serialize(_:into:)` defaults.
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
         into buffer: inout Buffer
@@ -138,7 +88,6 @@ extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
         serializeBytes(value, into: &buffer)
     }
 
-    /// Byte-domain serialization body (`[key=v1-v2-...]`).
     private static func serializeBytes<Buffer: RangeReplaceableCollection>(
         _ tag: Self,
         into buffer: inout Buffer
@@ -161,26 +110,18 @@ extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
     }
 }
 
-// MARK: - Parseable
-
 extension RFC_9557.Suffix.Tag: ASCII.Parseable {
-    /// Creates a suffix tag by validating `string`'s UTF-8 bytes.
+
     public init(_ string: some StringProtocol) throws(Error) {
         try self.init(ascii: [Byte](string.utf8))
     }
 
-    /// Parses a suffix tag from ASCII bytes
-    ///
-    /// - Parameter bytes: ASCII bytes (should be "[key=value]" format)
-    /// - Throws: `Error` if format is invalid
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.emptyKey
         }
 
-        // Type-up: lift to ASCII.Code at the entry boundary so the body works
-        // against ASCII.Code constants directly (RFC 9557 grammar is strict ASCII).
         let arr: [ASCII.Code]
         do throws(ASCII.Code.Error) {
             arr = try [ASCII.Code](bytes)
@@ -188,7 +129,6 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
             throw Error.invalidKey(String(decoding: bytes, as: UTF8.self))
         }
 
-        // Find key=value part (skip brackets if present)
         var startIdx = 0
         var endIdx = arr.count
 
@@ -208,13 +148,11 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
             throw Error.emptyKey
         }
 
-        // Check critical flag
         let firstByte = content.first!
         let critical = firstByte == ASCII.Code.exclamationPoint
         let actualStart = critical ? startIdx + 1 : startIdx
         let actualContent = arr[actualStart..<endIdx]
 
-        // Find equals sign
         var equalsIdx: Int? = nil
         for i in actualContent.indices {
             if actualContent[i] == ASCII.Code.equalsSign {
@@ -253,8 +191,6 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
 extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
     public typealias RawValue = String
 
-    /// The tag's ASCII serialization as a `String` (computed; derived from
-    /// serialization, not stored).
     public var rawValue: String {
         String(decoding: serialized.underlying, as: UTF8.self)
     }
@@ -269,7 +205,7 @@ extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
 }
 
 extension RFC_9557.Suffix.Tag: CustomStringConvertible {
-    /// The tag's ASCII serialization decoded as a `String`.
+
     public var description: String {
         String(decoding: serialized.underlying, as: UTF8.self)
     }

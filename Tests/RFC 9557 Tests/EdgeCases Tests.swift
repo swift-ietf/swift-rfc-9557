@@ -1,8 +1,3 @@
-// EdgeCases Tests.swift
-// swift-rfc-9557
-//
-// Tests for RFC 9557 edge cases
-
 import Testing
 
 @testable import RFC_9557
@@ -12,7 +7,7 @@ extension RFC_9557.Timestamp.Test {
     struct `Edge Cases Time Zone` {
         @Test
         func `IANA time zone case sensitivity`() throws {
-            // Time zone names are case-sensitive per spec
+
             let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[Europe/Paris]")
             let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[europe/paris]")
 
@@ -82,7 +77,7 @@ extension RFC_9557.Timestamp.Test {
 
         @Test
         func `Calendar value case sensitivity`() throws {
-            // Values are case-sensitive per spec
+
             let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=Hebrew]")
             let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=hebrew]")
 
@@ -186,8 +181,7 @@ extension RFC_9557.Timestamp.Test {
 
         @Test
         func `Z offset with time zone (no inconsistency)`() throws {
-            // Per spec: Z indicates UTC time known, local offset unknown
-            // Adding a time zone is not an inconsistency
+
             let input = "2022-07-08T00:14:07Z[Europe/Paris]"
             let ts = try RFC_9557.Timestamp(input)
 

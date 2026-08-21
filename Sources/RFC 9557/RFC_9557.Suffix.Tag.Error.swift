@@ -1,16 +1,13 @@
 extension RFC_9557.Suffix.Tag {
-    /// Errors that can occur during tag validation
+
     public enum Error: Swift.Error, Sendable, Equatable {
-        /// Key is empty
+
         case emptyKey
 
-        /// Key format is invalid
         case invalidKey(_ key: String)
 
-        /// Values array is empty
         case emptyValues
 
-        /// Value format is invalid
         case invalidValue(_ value: String)
     }
 }
