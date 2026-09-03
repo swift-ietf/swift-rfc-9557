@@ -47,16 +47,12 @@ let package = Package(
         .testTarget(
             name: "RFC 9557 Tests",
             dependencies: [
-                "RFC 9557"
+                .target(name: "RFC 9557")
             ]
         ),
     ],
     swiftLanguageModes: [.v6]
 )
-
-extension String {
-    var tests: Self { self + " Tests" }
-}
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
     let ecosystem: [SwiftSetting] = [
