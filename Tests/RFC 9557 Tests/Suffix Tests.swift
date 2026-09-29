@@ -25,7 +25,7 @@ extension RFC_9557.Suffix {
         func `Reject critical experimental tags`() {
             let input = "[!_foo=bar]"
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array(input.utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: input))
             }
         }
 
@@ -45,7 +45,7 @@ extension RFC_9557.Suffix.Test {
         func `Reject experimental tags in normal parse`() {
             let input = "[_foo=bar]"
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array(input.utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: input))
             }
         }
     }
@@ -58,17 +58,17 @@ extension RFC_9557.Suffix.Test {
         func `Reject malformed brackets: unclosed`() {
             let input = "[Europe/Paris"
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array(input.utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: input))
             }
         }
 
         @Test
         func `Reject empty tags`() {
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[]"))
             }
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[!]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[!]"))
             }
         }
 
@@ -76,7 +76,7 @@ extension RFC_9557.Suffix.Test {
         func `Reject multiple time zones`() {
             let input = "[Europe/Paris][America/New_York]"
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array(input.utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: input))
             }
         }
 
@@ -84,11 +84,11 @@ extension RFC_9557.Suffix.Test {
         func `Reject invalid suffix keys`() {
 
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[U-CA=hebrew]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[U-CA=hebrew]"))
             }
 
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[1foo=bar]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[1foo=bar]"))
             }
         }
 
@@ -96,7 +96,7 @@ extension RFC_9557.Suffix.Test {
         func `Reject invalid suffix values`() {
 
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[u-ca=foo@bar]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[u-ca=foo@bar]"))
             }
         }
 
@@ -104,11 +104,11 @@ extension RFC_9557.Suffix.Test {
         func `Reject invalid time zone names`() {
 
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[.]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[.]"))
             }
 
             #expect(throws: RFC_9557.Suffix.Error.self) {
-                try RFC_9557.Suffix(ascii: Array("[..]".utf8))
+                try RFC_9557.Suffix(ascii: [Byte](utf8: "[..]"))
             }
         }
     }

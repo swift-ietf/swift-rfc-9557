@@ -93,7 +93,7 @@ extension RFC_9557.Timestamp.Test {
     struct Serialization {
         @Test
         func `Serialize without suffix`() throws {
-            let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
+            let time = try Gregorian.DateTime(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
             let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
             let ts = RFC_9557.Timestamp(base: base)
 
@@ -103,7 +103,7 @@ extension RFC_9557.Timestamp.Test {
 
         @Test
         func `Serialize with IANA time zone`() throws {
-            let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
+            let time = try Gregorian.DateTime(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
             let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
             let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: false))
             let ts = RFC_9557.Timestamp(base: base, suffix: suffix)
@@ -114,7 +114,7 @@ extension RFC_9557.Timestamp.Test {
 
         @Test
         func `Serialize with critical time zone`() throws {
-            let time = try Time(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
+            let time = try Gregorian.DateTime(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
             let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
             let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: true))
             let ts = RFC_9557.Timestamp(base: base, suffix: suffix)
@@ -125,7 +125,7 @@ extension RFC_9557.Timestamp.Test {
 
         @Test
         func `Serialize with calendar system`() throws {
-            let time = try Time(year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+            let time = try Gregorian.DateTime(year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0)
             let base = RFC_3339.DateTime(time: time, offset: .utc)
             let suffix = RFC_9557.Suffix(
                 timeZone: .iana("Asia/Jerusalem", critical: false),

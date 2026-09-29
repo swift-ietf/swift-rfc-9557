@@ -91,28 +91,28 @@ extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
         _ tag: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        buffer.append(ASCII.Code.leftSquareBracket)
+        buffer.append(ASCII.Code.leftSquareBracket.byte)
         if tag.critical {
-            buffer.append(ASCII.Code.exclamationPoint)
+            buffer.append(ASCII.Code.exclamationPoint.byte)
         }
-        buffer.append(contentsOf: tag.key.utf8)
-        buffer.append(ASCII.Code.equalsSign)
+        buffer.append(contentsOf: [Byte](utf8: tag.key))
+        buffer.append(ASCII.Code.equalsSign.byte)
         var first = true
         for value in tag.values {
             if !first {
-                buffer.append(ASCII.Code.hyphen)
+                buffer.append(ASCII.Code.hyphen.byte)
             }
-            buffer.append(contentsOf: value.utf8)
+            buffer.append(contentsOf: [Byte](utf8: value))
             first = false
         }
-        buffer.append(ASCII.Code.rightSquareBracket)
+        buffer.append(ASCII.Code.rightSquareBracket.byte)
     }
 }
 
 extension RFC_9557.Suffix.Tag: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
-        try self.init(ascii: [Byte](string.utf8))
+        try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
@@ -123,7 +123,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
 
         let arr: [ASCII.Code]
         do throws(ASCII.Code.Error) {
-            arr = try [ASCII.Code](bytes)
+            arr = try bytes.map { byte throws(ASCII.Code.Error) in try ASCII.Code(byte) }
         } catch {
             throw Error.invalidKey(String(decoding: bytes, as: UTF8.self))
         }
@@ -171,17 +171,17 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
             throw Error.emptyKey
         }
 
-        let key = String(decoding: keyBytes, as: UTF8.self)
+        let key = String(ascii: keyBytes)
         let vArr = Array(valueBytes)
         var values: [String] = []
         var vStart = 0
         vArr.indices.forEach { vi in
             if vArr[vi] == ASCII.Code.hyphen {
-                values.append(String(decoding: vArr[vStart..<vi], as: UTF8.self))
+                values.append(String(ascii: vArr[vStart..<vi]))
                 vStart = vi &+ 1
             }
         }
-        values.append(String(decoding: vArr[vStart..<vArr.count], as: UTF8.self))
+        values.append(String(ascii: vArr[vStart..<vArr.count]))
 
         try self.init(key: key, values: values, critical: critical)
     }
@@ -191,7 +191,7 @@ extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 
     public init?(rawValue: String) {
@@ -206,6 +206,6 @@ extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
 extension RFC_9557.Suffix.Tag: CustomStringConvertible {
 
     public var description: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 }

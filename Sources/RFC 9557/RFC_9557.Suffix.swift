@@ -69,20 +69,20 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
     ) where Buffer.Element == Byte {
 
         if let tz = suffix.timeZone {
-            buffer.append(ASCII.Code.leftSquareBracket)
+            buffer.append(ASCII.Code.leftSquareBracket.byte)
             if tz.isCritical {
-                buffer.append(ASCII.Code.exclamationPoint)
+                buffer.append(ASCII.Code.exclamationPoint.byte)
             }
-            buffer.append(contentsOf: tz.identifier.utf8)
-            buffer.append(ASCII.Code.rightSquareBracket)
+            buffer.append(contentsOf: [Byte](utf8: tz.identifier))
+            buffer.append(ASCII.Code.rightSquareBracket.byte)
         }
 
         if let cal = suffix.calendar {
-            buffer.append(ASCII.Code.leftSquareBracket)
-            buffer.append(contentsOf: "u-ca".utf8)
-            buffer.append(ASCII.Code.equalsSign)
-            buffer.append(contentsOf: cal.utf8)
-            buffer.append(ASCII.Code.rightSquareBracket)
+            buffer.append(ASCII.Code.leftSquareBracket.byte)
+            buffer.append(contentsOf: [Byte](utf8: "u-ca"))
+            buffer.append(ASCII.Code.equalsSign.byte)
+            buffer.append(contentsOf: [Byte](utf8: cal))
+            buffer.append(ASCII.Code.rightSquareBracket.byte)
         }
 
         for tag in suffix.tags {
@@ -94,7 +94,7 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
 extension RFC_9557.Suffix: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
-        try self.init(ascii: [Byte](string.utf8))
+        try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
@@ -268,7 +268,7 @@ extension RFC_9557.Suffix: Swift.RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 
     public init?(rawValue: String) {
@@ -283,7 +283,7 @@ extension RFC_9557.Suffix: Swift.RawRepresentable {
 extension RFC_9557.Suffix: CustomStringConvertible {
 
     public var description: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 }
 

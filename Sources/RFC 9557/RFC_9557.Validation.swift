@@ -8,7 +8,7 @@ extension RFC_9557 {
 extension RFC_9557.Validation {
 
     public static func validateSuffixKey(_ key: String) throws(ValidationError) {
-        try validateSuffixKey([Byte](key.utf8))
+        try validateSuffixKey([Byte](utf8: key))
     }
 
     @inlinable
@@ -61,7 +61,7 @@ extension RFC_9557.Validation {
 extension RFC_9557.Validation {
 
     public static func validateSuffixValue(_ value: String) throws(ValidationError) {
-        try validateSuffixValue([Byte](value.utf8))
+        try validateSuffixValue([Byte](utf8: value))
     }
 
     @inlinable
@@ -90,7 +90,7 @@ extension RFC_9557.Validation {
 extension RFC_9557.Validation {
 
     public static func validateTimeZoneName(_ name: String) throws(ValidationError) {
-        try validateTimeZoneName([Byte](name.utf8))
+        try validateTimeZoneName([Byte](utf8: name))
     }
 
     @inlinable

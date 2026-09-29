@@ -56,7 +56,7 @@ extension RFC_9557.Timestamp: ASCII.Serializable, Binary.Serializable {
 extension RFC_9557.Timestamp: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
-        try self.init(ascii: [Byte](string.utf8))
+        try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
@@ -107,7 +107,7 @@ extension RFC_9557.Timestamp: Swift.RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 
     public init?(rawValue: String) {
@@ -122,6 +122,6 @@ extension RFC_9557.Timestamp: Swift.RawRepresentable {
 extension RFC_9557.Timestamp: CustomStringConvertible {
 
     public var description: String {
-        String(decoding: serialized.underlying, as: UTF8.self)
+        String(decoding: serialized, as: UTF8.self)
     }
 }
