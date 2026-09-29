@@ -1,4 +1,4 @@
-public import ASCII_Serializer
+public import ASCII
 
 extension RFC_9557 {
 

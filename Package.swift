@@ -15,39 +15,36 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-molecules/swift-ascii-serializer.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-atoms/swift-standard-library-extensions.git",
             branch: "main"
         ),
         .package(url: "https://github.com/swift-ietf/swift-rfc-3339.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-molecules/swift-parser.git",
+            url: "https://github.com/swift-atoms/swift-parser.git",
             branch: "main"
         ),
+        .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main", traits: ["Parser", "Serializer"]),
+        .package(url: "https://github.com/swift-atoms/swift-binary.git", branch: "main", traits: ["Serializer"]),
     ],
     targets: [
         .target(
             name: "RFC 9557",
             dependencies: [
                 .product(
-                    name: "ASCII Serializer",
-                    package: "swift-ascii-serializer"
-                ),
-                .product(
                     name: "Standard Library Extensions",
                     package: "swift-standard-library-extensions"
                 ),
                 .product(name: "RFC 3339", package: "swift-rfc-3339"),
                 .product(name: "Parser", package: "swift-parser"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Binary", package: "swift-binary"),
             ]
         ),
         .testTarget(
             name: "RFC 9557 Tests",
             dependencies: [
-                .target(name: "RFC 9557")
+                .target(name: "RFC 9557"),
+                .product(name: "Binary", package: "swift-binary"),
             ]
         ),
     ],

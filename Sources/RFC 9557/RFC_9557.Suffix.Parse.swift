@@ -13,7 +13,7 @@ extension RFC_9557.Suffix.Parse {
     public typealias Output = [Annotation]
 }
 
-extension RFC_9557.Suffix.Parse: Parser.`Protocol` {
+extension RFC_9557.Suffix.Parse: Parsing {
     public typealias Failure = __SuffixParseError
     public typealias Body = Never
 
