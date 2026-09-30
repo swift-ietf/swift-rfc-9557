@@ -117,6 +117,9 @@ extension RFC_9557.Validation {
 
             if code == ASCII.Code.solidus {
 
+                guard partLength > 0 else {
+                    throw ValidationError.invalidTimeZoneName
+                }
                 if allDots && partLength > 0 && partLength <= 2 {
                     throw ValidationError.invalidTimeZoneName
                 }
@@ -124,6 +127,11 @@ extension RFC_9557.Validation {
                 partLength = 0
                 allDots = true
             } else {
+                if partLength == 0,
+                    !(code.isLetter || code == ASCII.Code.period || code == ASCII.Code.underline)
+                {
+                    throw ValidationError.invalidTimeZoneName
+                }
                 partLength += 1
                 if code != ASCII.Code.period {
                     allDots = false
@@ -139,7 +147,10 @@ extension RFC_9557.Validation {
             }
         }
 
-        if allDots && partLength > 0 && partLength <= 2 {
+        guard partLength > 0 else {
+            throw ValidationError.invalidTimeZoneName
+        }
+        if allDots && partLength <= 2 {
             throw ValidationError.invalidTimeZoneName
         }
     }
