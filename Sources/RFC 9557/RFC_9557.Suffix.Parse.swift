@@ -14,11 +14,6 @@ extension RFC_9557.Suffix.Parse {
 }
 
 extension RFC_9557.Suffix.Parse: Parsing {
-    public var body: Never {
-        borrowing get {
-            return fatalError("\(Self.self) is a leaf parser: implement parse(_:) directly")
-        }
-    }
 
     public typealias Failure = __SuffixParseError
     public typealias Body = Never
