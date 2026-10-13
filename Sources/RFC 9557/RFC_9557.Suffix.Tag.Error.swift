@@ -1,6 +1,6 @@
 extension RFC_9557.Suffix.Tag {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case emptyKey
 

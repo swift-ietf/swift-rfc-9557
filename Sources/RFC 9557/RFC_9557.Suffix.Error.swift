@@ -1,6 +1,6 @@
 extension RFC_9557.Suffix {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case empty
 

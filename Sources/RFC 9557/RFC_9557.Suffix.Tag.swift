@@ -115,7 +115,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
         try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.emptyKey
@@ -187,7 +187,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
     }
 }
 
-extension RFC_9557.Suffix.Tag: Swift.RawRepresentable {
+extension RFC_9557.Suffix.Tag: Swift::RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {

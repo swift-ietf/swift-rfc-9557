@@ -12,7 +12,7 @@ extension RFC_9557.Validation {
     }
 
     @inlinable
-    public static func validateSuffixKey<Bytes: Swift.Collection>(
+    public static func validateSuffixKey<Bytes: Swift::Collection>(
         _ bytes: Bytes
     ) throws(ValidationError)
     where Bytes.Element == Byte {
@@ -52,7 +52,7 @@ extension RFC_9557.Validation {
     }
 
     @_transparent
-    public static func isExperimentalKey<Bytes: Swift.Collection>(_ bytes: Bytes) -> Bool
+    public static func isExperimentalKey<Bytes: Swift::Collection>(_ bytes: Bytes) -> Bool
     where Bytes.Element == Byte {
         bytes.first.map { $0 == ASCII.Code.underline.byte } ?? false
     }
@@ -65,7 +65,7 @@ extension RFC_9557.Validation {
     }
 
     @inlinable
-    public static func validateSuffixValue<Bytes: Swift.Collection>(
+    public static func validateSuffixValue<Bytes: Swift::Collection>(
         _ bytes: Bytes
     ) throws(ValidationError)
     where Bytes.Element == Byte {
@@ -94,7 +94,7 @@ extension RFC_9557.Validation {
     }
 
     @inlinable
-    public static func validateTimeZoneName<Bytes: Swift.Collection>(
+    public static func validateTimeZoneName<Bytes: Swift::Collection>(
         _ bytes: Bytes
     ) throws(ValidationError)
     where Bytes.Element == Byte {
@@ -102,7 +102,6 @@ extension RFC_9557.Validation {
             throw ValidationError.invalidTimeZoneName
         }
 
-        var partStart = bytes.startIndex
         var partLength = 0
         var allDots = true
 
@@ -123,7 +122,6 @@ extension RFC_9557.Validation {
                 if allDots && partLength > 0 && partLength <= 2 {
                     throw ValidationError.invalidTimeZoneName
                 }
-                partStart = bytes.index(after: index)
                 partLength = 0
                 allDots = true
             } else {

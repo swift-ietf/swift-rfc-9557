@@ -1,4 +1,4 @@
-public enum __SuffixParseError: Swift.Error, Sendable, Equatable {
+public enum __SuffixParseError: Swift::Error, Sendable, Equatable {
 
     case expectedOpenBracket
 
