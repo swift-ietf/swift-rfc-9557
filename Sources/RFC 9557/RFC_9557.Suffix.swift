@@ -11,8 +11,7 @@ extension RFC_9557 {
 
         public let tags: [Suffix.Tag]
 
-        private init(__unchecked: Void, timeZone: TimeZone?, calendar: String?, tags: [Suffix.Tag])
-        {
+        private init(__unchecked: Void, timeZone: TimeZone?, calendar: String?, tags: [Suffix.Tag]) {
             self.timeZone = timeZone
             self.calendar = calendar
             self.tags = tags
@@ -133,11 +132,9 @@ extension RFC_9557.Suffix: ASCII.Parseable {
             }
 
             let content = bytes[contentStart..<end]
-            guard !content.isEmpty else {
+            guard let firstByte = content.first else {
                 throw Error.emptyTag
             }
-
-            let firstByte = content.first!
             let critical = firstByte == ASCII.Code.exclamationPoint.byte
             let actualContent: Bytes.SubSequence
             if critical {

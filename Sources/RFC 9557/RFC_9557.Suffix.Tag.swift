@@ -143,11 +143,9 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
         }
 
         let content = arr[startIdx..<endIdx]
-        guard !content.isEmpty else {
+        guard let firstByte = content.first else {
             throw Error.emptyKey
         }
-
-        let firstByte = content.first!
         let critical = firstByte == ASCII.Code.exclamationPoint
         let actualStart = critical ? startIdx + 1 : startIdx
         let actualContent = arr[actualStart..<endIdx]
