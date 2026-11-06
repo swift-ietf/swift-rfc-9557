@@ -2,7 +2,9 @@ import Testing
 
 @testable import RFC_9557
 
-extension RFC_9557.Validation {
+enum `RFC_9557.Validation Tests` {}
+
+extension `RFC_9557.Validation Tests` {
     @Suite("RFC_9557.Validation - Suffix Key Format")
     struct Test {
         @Test
@@ -76,7 +78,7 @@ extension RFC_9557.Validation {
     }
 }
 
-extension RFC_9557.Validation.Test {
+extension `RFC_9557.Validation Tests`.Test {
     @Suite
     struct `Suffix Value` {
         @Test
@@ -117,7 +119,7 @@ extension RFC_9557.Validation.Test {
     }
 }
 
-extension RFC_9557.Validation.Test {
+extension `RFC_9557.Validation Tests`.Test {
     @Suite
     struct `Time Zone Name` {
         @Test
@@ -170,7 +172,7 @@ extension RFC_9557.Validation.Test {
     }
 }
 
-extension RFC_9557.Validation.Test {
+extension `RFC_9557.Validation Tests`.Test {
     @Suite
     struct `Registered Keys` {
         @Test

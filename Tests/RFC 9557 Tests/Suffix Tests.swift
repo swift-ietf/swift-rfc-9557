@@ -2,7 +2,9 @@ import Testing
 
 @testable import RFC_9557
 
-extension RFC_9557.Suffix {
+enum `RFC_9557.Suffix Tests` {}
+
+extension `RFC_9557.Suffix Tests` {
     @Suite("RFC_9557.Suffix - Error Handling: Critical Tags")
     struct Test {
         @Test
@@ -38,7 +40,7 @@ extension RFC_9557.Suffix {
     }
 }
 
-extension RFC_9557.Suffix.Test {
+extension `RFC_9557.Suffix Tests`.Test {
     @Suite
     struct `Error Experimental Tag` {
         @Test
@@ -51,7 +53,7 @@ extension RFC_9557.Suffix.Test {
     }
 }
 
-extension RFC_9557.Suffix.Test {
+extension `RFC_9557.Suffix Tests`.Test {
     @Suite
     struct `Error Invalid Format` {
         @Test
@@ -114,7 +116,7 @@ extension RFC_9557.Suffix.Test {
     }
 }
 
-extension RFC_9557.Suffix.Test {
+extension `RFC_9557.Suffix Tests`.Test {
     @Suite
     struct `Error Duplicate Key` {
         @Test

@@ -2,7 +2,7 @@ import Testing
 
 @testable import RFC_9557
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Time Zone` {
         @Test
@@ -59,7 +59,7 @@ extension RFC_9557.Timestamp.Test {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Calendar` {
         @Test
@@ -88,7 +88,7 @@ extension RFC_9557.Timestamp.Test {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Complex Suffix` {
         @Test
@@ -143,7 +143,7 @@ extension RFC_9557.Timestamp.Test {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases RFC 3339 Compatibility` {
         @Test
@@ -191,7 +191,7 @@ extension RFC_9557.Timestamp.Test {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Minimal Input` {
         @Test

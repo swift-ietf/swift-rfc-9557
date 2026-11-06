@@ -3,7 +3,9 @@ import Testing
 
 @testable import RFC_9557
 
-extension RFC_9557.Timestamp {
+enum `RFC_9557.Timestamp Tests` {}
+
+extension `RFC_9557.Timestamp Tests` {
     @Suite("RFC_9557.Timestamp - Basic Parsing")
     struct Test {
         @Test
@@ -62,7 +64,7 @@ extension RFC_9557.Timestamp {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite("RFC_9557.Timestamp - Examples from RFC")
     struct RFCExamples {
         @Test
@@ -88,7 +90,7 @@ extension RFC_9557.Timestamp.Test {
     }
 }
 
-extension RFC_9557.Timestamp.Test {
+extension `RFC_9557.Timestamp Tests`.Test {
     @Suite("RFC_9557.Timestamp - Serialization")
     struct Serialization {
         @Test
