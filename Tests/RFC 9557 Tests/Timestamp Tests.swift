@@ -6,7 +6,7 @@ import Testing
 enum `RFC_9557.Timestamp Tests` {}
 
 extension `RFC_9557.Timestamp Tests` {
-    @Suite("RFC_9557.Timestamp - Basic Parsing")
+    @Suite
     struct Test {
         @Test
         func `Parse RFC 3339 without suffix`() throws {
@@ -65,7 +65,7 @@ extension `RFC_9557.Timestamp Tests` {
 }
 
 extension `RFC_9557.Timestamp Tests`.Test {
-    @Suite("RFC_9557.Timestamp - Examples from RFC")
+    @Suite
     struct RFCExamples {
         @Test
         func `Example 1: Basic timestamp with time zone`() throws {
@@ -91,7 +91,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
 }
 
 extension `RFC_9557.Timestamp Tests`.Test {
-    @Suite("RFC_9557.Timestamp - Serialization")
+    @Suite
     struct Serialization {
         @Test
         func `Serialize without suffix`() throws {

@@ -5,7 +5,7 @@ import Testing
 enum `RFC_9557.Validation Tests` {}
 
 extension `RFC_9557.Validation Tests` {
-    @Suite("RFC_9557.Validation - Suffix Key Format")
+    @Suite
     struct Test {
         @Test
         func `Valid lowercase keys`() throws {

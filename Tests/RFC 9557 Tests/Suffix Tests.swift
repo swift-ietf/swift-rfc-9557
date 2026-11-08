@@ -5,7 +5,7 @@ import Testing
 enum `RFC_9557.Suffix Tests` {}
 
 extension `RFC_9557.Suffix Tests` {
-    @Suite("RFC_9557.Suffix - Error Handling: Critical Tags")
+    @Suite
     struct Test {
         @Test
         func `Reject critical unknown tags`() {
