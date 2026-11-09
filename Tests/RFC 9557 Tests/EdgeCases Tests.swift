@@ -171,12 +171,10 @@ extension `RFC_9557.Timestamp Tests`.Test {
         }
 
         @Test
-        func `Leap second with suffix`() throws {
-            let input = "1990-12-31T23:59:60Z[UTC]"
-            let ts = try RFC_9557.Timestamp(input)
-
-            #expect(ts.base.time.second.value == 60)
-            #expect(ts.suffix?.timeZone?.identifier == "UTC")
+        func `Leap second with suffix is refused`() {
+            #expect(throws: RFC_9557.Timestamp.Error.invalidBase("1990-12-31T23:59:60Z")) {
+                _ = try RFC_9557.Timestamp("1990-12-31T23:59:60Z[UTC]")
+            }
         }
 
         @Test
