@@ -156,6 +156,39 @@ extension RFC_9557.Validation {
 
 extension RFC_9557.Validation {
 
+    public static func validateTimeZoneOffset(_ offset: String) throws(ValidationError) {
+        try validateTimeZoneOffset([Byte](utf8: offset))
+    }
+
+    @inlinable
+    public static func validateTimeZoneOffset<Bytes: Swift::Collection>(
+        _ bytes: Bytes
+    ) throws(ValidationError)
+    where Bytes.Element == Byte {
+        let codes: [ASCII.Code]
+        do throws(ASCII.Code.Error) {
+            codes = try bytes.map { byte throws(ASCII.Code.Error) in try ASCII.Code(byte) }
+        } catch {
+            throw ValidationError.invalidTimeZoneOffset
+        }
+        guard codes.count == 6,
+            codes[0] == ASCII.Code.plus || codes[0] == ASCII.Code.hyphen,
+            codes[3] == ASCII.Code.colon,
+            let hourTens = codes[1].digitValue, let hourOnes = codes[2].digitValue,
+            let minuteTens = codes[4].digitValue, let minuteOnes = codes[5].digitValue
+        else {
+            throw ValidationError.invalidTimeZoneOffset
+        }
+        let hour = hourTens &* 10 &+ hourOnes
+        let minute = minuteTens &* 10 &+ minuteOnes
+        guard hour <= 23, minute <= 59 else {
+            throw ValidationError.invalidTimeZoneOffset
+        }
+    }
+}
+
+extension RFC_9557.Validation {
+
     public static let registeredKeys: Set<String> = ["u-ca"]
 
     @_transparent

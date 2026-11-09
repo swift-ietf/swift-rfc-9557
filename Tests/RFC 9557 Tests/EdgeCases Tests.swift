@@ -71,7 +71,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             for calendar in calendars {
                 let input = "2022-07-08T00:14:07Z[u-ca=\(calendar)]"
                 let ts = try RFC_9557.Timestamp(input)
-                #expect(ts.suffix?.calendar == calendar)
+                #expect(ts.suffix?.calendar?.identifier == calendar)
             }
         }
 
@@ -81,8 +81,8 @@ extension `RFC_9557.Timestamp Tests`.Test {
             let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=Hebrew]")
             let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=hebrew]")
 
-            #expect(ts1.suffix?.calendar == "Hebrew")
-            #expect(ts2.suffix?.calendar == "hebrew")
+            #expect(ts1.suffix?.calendar?.identifier == "Hebrew")
+            #expect(ts2.suffix?.calendar?.identifier == "hebrew")
             #expect(ts1.suffix?.calendar != ts2.suffix?.calendar)
         }
     }
@@ -97,7 +97,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             let ts = try RFC_9557.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.identifier == "America/Los_Angeles")
-            #expect(ts.suffix?.calendar == "hebrew")
+            #expect(ts.suffix?.calendar?.identifier == "hebrew")
         }
 
         @Test
@@ -106,7 +106,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             let ts = try RFC_9557.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.identifier == "Europe/Paris")
-            #expect(ts.suffix?.calendar == "gregory")
+            #expect(ts.suffix?.calendar?.identifier == "gregory")
             #expect(ts.suffix?.tags.count == 2)
         }
 
@@ -124,7 +124,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             let input = "2022-07-08T00:14:07Z[!u-ca=hebrew][foo=bar]"
             let ts = try RFC_9557.Timestamp(input)
 
-            #expect(ts.suffix?.calendar == "hebrew")
+            #expect(ts.suffix?.calendar?.identifier == "hebrew")
             #expect(ts.suffix?.tags.count == 1)
             #expect(ts.suffix?.tags.first?.critical == false)
         }
@@ -136,7 +136,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             let ts = try RFC_9557.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.isCritical == true)
-            #expect(ts.suffix?.calendar == "hebrew")
+            #expect(ts.suffix?.calendar?.identifier == "hebrew")
             #expect(ts.suffix?.tags.count == 2)
             #expect(ts.suffix?.hasCriticalComponents == true)
         }

@@ -9,6 +9,10 @@ extension RFC_9557.Suffix.Tag {
         case emptyValues
 
         case invalidValue(_ value: String)
+
+        case experimentalKey(_ key: String)
+
+        case criticalTagNotSupported(_ key: String)
     }
 }
 
@@ -26,6 +30,12 @@ extension RFC_9557.Suffix.Tag.Error: CustomStringConvertible {
 
         case .invalidValue(let value):
             return "Invalid tag value '\(value)'"
+
+        case .experimentalKey(let key):
+            return "Experimental tag key '\(key)' not allowed in interchange"
+
+        case .criticalTagNotSupported(let key):
+            return "Critical tag '\(key)' is not supported"
         }
     }
 }

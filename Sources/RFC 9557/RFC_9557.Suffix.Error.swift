@@ -16,6 +16,10 @@ extension RFC_9557.Suffix {
 
         case invalidTimeZoneName(_ name: String)
 
+        case invalidTimeZoneOffset(_ offset: String)
+
+        case duplicateKey(_ key: String)
+
         case criticalTagNotSupported(_ key: String)
 
         case criticalExperimentalTag(_ key: String)
@@ -47,6 +51,12 @@ extension RFC_9557.Suffix.Error: CustomStringConvertible {
 
         case .invalidTimeZoneName(let name):
             return "Invalid time zone name '\(name)'"
+
+        case .invalidTimeZoneOffset(let offset):
+            return "Invalid time zone offset '\(offset)': must be +HH:MM or -HH:MM"
+
+        case .duplicateKey(let key):
+            return "Tag key '\(key)' appears more than once"
 
         case .criticalTagNotSupported(let key):
             return "Critical tag '\(key)' is not supported"

@@ -4,5 +4,6 @@ extension RFC_9557.Validation {
         case invalidSuffixKey
         case invalidSuffixValue
         case invalidTimeZoneName
+        case invalidTimeZoneOffset
     }
 }

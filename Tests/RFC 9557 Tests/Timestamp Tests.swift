@@ -50,7 +50,7 @@ extension `RFC_9557.Timestamp Tests` {
             let ts = try RFC_9557.Timestamp(input)
 
             #expect(ts.suffix?.timeZone == .iana("Asia/Jerusalem", critical: false))
-            #expect(ts.suffix?.calendar == "hebrew")
+            #expect(ts.suffix?.calendar?.identifier == "hebrew")
         }
 
         @Test
@@ -59,7 +59,7 @@ extension `RFC_9557.Timestamp Tests` {
             let ts = try RFC_9557.Timestamp(input)
 
             #expect(ts.suffix?.timeZone == .iana("Europe/Paris", critical: false))
-            #expect(ts.suffix?.calendar == "gregory")
+            #expect(ts.suffix?.calendar?.identifier == "gregory")
         }
     }
 }
@@ -85,7 +85,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
 
             #expect(ts.base.time.year == 2022)
             #expect(ts.suffix?.timeZone?.identifier == "Europe/London")
-            #expect(ts.suffix?.calendar == "iso8601")
+            #expect(ts.suffix?.calendar?.identifier == "iso8601")
         }
     }
 }
@@ -107,7 +107,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         func `Serialize with IANA time zone`() throws {
             let time = try Gregorian.DateTime(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
             let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
-            let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: false))
+            let suffix = try RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: false))
             let ts = RFC_9557.Timestamp(base: base, suffix: suffix)
 
             let formatted = String(ts)
@@ -118,7 +118,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         func `Serialize with critical time zone`() throws {
             let time = try Gregorian.DateTime(year: 1996, month: 12, day: 19, hour: 16, minute: 39, second: 57)
             let base = RFC_3339.DateTime(time: time, offset: .offset(seconds: -28800))
-            let suffix = RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: true))
+            let suffix = try RFC_9557.Suffix(timeZone: .iana("America/Los_Angeles", critical: true))
             let ts = RFC_9557.Timestamp(base: base, suffix: suffix)
 
             let formatted = String(ts)
@@ -129,9 +129,9 @@ extension `RFC_9557.Timestamp Tests`.Test {
         func `Serialize with calendar system`() throws {
             let time = try Gregorian.DateTime(year: 2024, month: 1, day: 1, hour: 0, minute: 0, second: 0)
             let base = RFC_3339.DateTime(time: time, offset: .utc)
-            let suffix = RFC_9557.Suffix(
+            let suffix = try RFC_9557.Suffix(
                 timeZone: .iana("Asia/Jerusalem", critical: false),
-                calendar: "hebrew"
+                calendar: RFC_9557.Suffix.Calendar("hebrew")
             )
             let ts = RFC_9557.Timestamp(base: base, suffix: suffix)
 

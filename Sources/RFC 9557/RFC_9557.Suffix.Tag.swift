@@ -28,6 +28,14 @@ extension RFC_9557.Suffix {
                 throw Error.invalidKey(key)
             }
 
+            guard !RFC_9557.Validation.isExperimentalKey(key) else {
+                throw Error.experimentalKey(key)
+            }
+
+            guard !critical || RFC_9557.Validation.isRegisteredKey(key) else {
+                throw Error.criticalTagNotSupported(key)
+            }
+
             guard !values.isEmpty else {
                 throw Error.emptyValues
             }
@@ -45,13 +53,6 @@ extension RFC_9557.Suffix {
 
             self.init(__unchecked: (), key: key, values: values, critical: critical)
         }
-    }
-}
-
-extension RFC_9557.Suffix.Tag {
-
-    public var isExperimental: Bool {
-        key.hasPrefix("_")
     }
 }
 

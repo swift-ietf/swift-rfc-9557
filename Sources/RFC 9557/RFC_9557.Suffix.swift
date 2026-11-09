@@ -7,19 +7,48 @@ extension RFC_9557 {
 
         public let timeZone: TimeZone?
 
-        public let calendar: String?
+        public let calendar: Calendar?
 
         public let tags: [Suffix.Tag]
 
-        private init(__unchecked: Void, timeZone: TimeZone?, calendar: String?, tags: [Suffix.Tag]) {
+        private init(__unchecked: Void, timeZone: TimeZone?, calendar: Calendar?, tags: [Suffix.Tag]) {
             self.timeZone = timeZone
             self.calendar = calendar
             self.tags = tags
         }
 
-        public init(timeZone: TimeZone? = nil, calendar: String? = nil, tags: [Suffix.Tag] = []) {
-
+        public init(
+            timeZone: TimeZone? = nil,
+            calendar: Calendar? = nil,
+            tags: [Suffix.Tag] = []
+        ) throws(Error) {
+            if let timeZone {
+                try Self.validate(timeZone)
+            }
+            var seenKeys: Set<String> = ["u-ca"]
+            for tag in tags {
+                guard seenKeys.insert(tag.key).inserted else {
+                    throw Error.duplicateKey(tag.key)
+                }
+            }
             self.init(__unchecked: (), timeZone: timeZone, calendar: calendar, tags: tags)
+        }
+
+        private static func validate(_ timeZone: TimeZone) throws(Error) {
+            switch timeZone {
+            case .offset(let offset, _):
+                do throws(RFC_9557.Validation.ValidationError) {
+                    try RFC_9557.Validation.validateTimeZoneOffset(offset)
+                } catch {
+                    throw Error.invalidTimeZoneOffset(offset)
+                }
+            case .iana(let name, _):
+                do throws(RFC_9557.Validation.ValidationError) {
+                    try RFC_9557.Validation.validateTimeZoneName(name)
+                } catch {
+                    throw Error.invalidTimeZoneName(name)
+                }
+            }
         }
     }
 }
@@ -44,9 +73,12 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
 
         if let cal = value.calendar {
             buffer.append(ASCII.Code.leftSquareBracket)
+            if cal.isCritical {
+                buffer.append(ASCII.Code.exclamationPoint)
+            }
             buffer.append(contentsOf: "u-ca".utf8.map { ASCII.Code(unchecked: Byte($0)) })
             buffer.append(ASCII.Code.equalsSign)
-            buffer.append(contentsOf: cal.utf8.map { ASCII.Code(unchecked: Byte($0)) })
+            buffer.append(contentsOf: cal.identifier.utf8.map { ASCII.Code(unchecked: Byte($0)) })
             buffer.append(ASCII.Code.rightSquareBracket)
         }
 
@@ -78,9 +110,12 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
 
         if let cal = suffix.calendar {
             buffer.append(ASCII.Code.leftSquareBracket.byte)
+            if cal.isCritical {
+                buffer.append(ASCII.Code.exclamationPoint.byte)
+            }
             buffer.append(contentsOf: [Byte](utf8: "u-ca"))
             buffer.append(ASCII.Code.equalsSign.byte)
-            buffer.append(contentsOf: [Byte](utf8: cal))
+            buffer.append(contentsOf: [Byte](utf8: cal.identifier))
             buffer.append(ASCII.Code.rightSquareBracket.byte)
         }
 
@@ -103,7 +138,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
         }
 
         var timeZone: RFC_9557.TimeZone? = nil
-        var calendar: String? = nil
+        var calendar: Calendar? = nil
         var tags: [RFC_9557.Suffix.Tag] = []
         var seenKeys = Set<String>()
 
@@ -111,8 +146,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
         while index < bytes.endIndex {
 
             guard bytes[index] == ASCII.Code.leftSquareBracket.byte else {
-                index = bytes.index(after: index)
-                continue
+                throw Error.malformedBrackets(String(decoding: bytes, as: UTF8.self))
             }
 
             let contentStart = bytes.index(after: index)
@@ -208,8 +242,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 }
 
                 if key == "u-ca" {
-                    if calendar == nil {
-                        calendar = values.first
+                    if calendar == nil, let identifier = values.first {
+                        calendar = Calendar(__unchecked: (), identifier: identifier, isCritical: critical)
                     }
 
                 } else {
@@ -243,6 +277,11 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 if firstCharByte == ASCII.Code.plus.byte
                     || firstCharByte == ASCII.Code.hyphen.byte
                 {
+                    do throws(RFC_9557.Validation.ValidationError) {
+                        try RFC_9557.Validation.validateTimeZoneOffset(tzString)
+                    } catch {
+                        throw Error.invalidTimeZoneOffset(tzString)
+                    }
                     timeZone = .offset(tzString, critical: critical)
                 } else {
                     do throws(RFC_9557.Validation.ValidationError) {
@@ -287,7 +326,7 @@ extension RFC_9557.Suffix: CustomStringConvertible {
 extension RFC_9557.Suffix {
 
     public var hasCriticalComponents: Bool {
-        if timeZone?.isCritical == true {
+        if timeZone?.isCritical == true || calendar?.isCritical == true {
             return true
         }
         return tags.contains { $0.critical }

@@ -35,7 +35,7 @@ extension `RFC_9557.Suffix Tests` {
         func `Accept critical registered tags (u-ca)`() throws {
             let input = "2022-07-08T00:14:07Z[!u-ca=hebrew]"
             let ts = try RFC_9557.Timestamp(input)
-            #expect(ts.suffix?.calendar == "hebrew")
+            #expect(ts.suffix?.calendar?.identifier == "hebrew")
         }
     }
 }
@@ -123,7 +123,7 @@ extension `RFC_9557.Suffix Tests`.Test {
         func `Duplicate u-ca tags: use first occurrence`() throws {
             let input = "2022-07-08T00:14:07Z[u-ca=chinese][u-ca=japanese]"
             let ts = try RFC_9557.Timestamp(input)
-            #expect(ts.suffix?.calendar == "chinese")
+            #expect(ts.suffix?.calendar?.identifier == "chinese")
         }
 
         @Test
@@ -145,6 +145,139 @@ extension `RFC_9557.Suffix Tests`.Test {
 
             #expect(ts.suffix?.tags.contains { $0.key == "bar" } == true)
             #expect(ts.suffix?.tags.contains { $0.key == "baz" } == true)
+        }
+    }
+}
+
+extension `RFC_9557.Suffix Tests`.Test {
+    @Suite
+    struct `Bytes Outside Brackets` {
+        @Test(arguments: ["[Europe/Paris]junk", "x[UTC]", "[UTC] [u-ca=hebrew]", "[UTC]]"])
+        func `bytes outside brackets are refused`(_ input: String) {
+            #expect(throws: RFC_9557.Suffix.Error.malformedBrackets(input)) {
+                try RFC_9557.Suffix(input)
+            }
+        }
+
+        @Test
+        func `a timestamp with junk after its suffix is refused`() {
+            #expect(throws: RFC_9557.Timestamp.Error.self) {
+                try RFC_9557.Timestamp("2022-07-08T00:14:07Z[Europe/Paris]junk")
+            }
+        }
+    }
+}
+
+extension `RFC_9557.Suffix Tests`.Test {
+    @Suite
+    struct `Offset Time Zone` {
+        @Test(arguments: ["+banana", "+8:45", "+08:60", "+24:00", "-0800", "+08:45:00", "+"])
+        func `an offset that is not an RFC 3339 offset is refused`(_ offset: String) {
+            #expect(throws: RFC_9557.Suffix.Error.invalidTimeZoneOffset(offset)) {
+                try RFC_9557.Suffix("[\(offset)]")
+            }
+            #expect(throws: RFC_9557.Suffix.Error.invalidTimeZoneOffset(offset)) {
+                try RFC_9557.Suffix(timeZone: .offset(offset, critical: false))
+            }
+        }
+
+        @Test(arguments: ["+00:00", "-00:00", "+23:59", "-12:30"])
+        func `an RFC 3339 offset is accepted`(_ offset: String) throws {
+            let suffix = try RFC_9557.Suffix("[\(offset)]")
+            #expect(suffix.timeZone == .offset(offset, critical: false))
+        }
+    }
+}
+
+extension `RFC_9557.Suffix Tests`.Test {
+    @Suite
+    struct `Critical Calendar` {
+        @Test
+        func `a critical calendar keeps its flag through a round trip`() throws {
+            let input = "2022-07-08T00:14:07Z[!u-ca=hebrew]"
+            let ts = try RFC_9557.Timestamp(input)
+            #expect(ts.suffix?.calendar == (try RFC_9557.Suffix.Calendar.critical("hebrew")))
+            #expect(ts.suffix?.hasCriticalComponents == true)
+            #expect(String(ts) == input)
+        }
+
+        @Test
+        func `an elective calendar is written without a flag`() throws {
+            let input = "2022-07-08T00:14:07Z[u-ca=hebrew]"
+            let ts = try RFC_9557.Timestamp(input)
+            #expect(ts.suffix?.calendar?.isCritical == false)
+            #expect(String(ts) == input)
+        }
+    }
+}
+
+extension `RFC_9557.Suffix Tests`.Test {
+    @Suite
+    struct `Built Suffix` {
+        @Test(arguments: ["", "foo@bar", "islamic-civil"])
+        func `an invalid calendar is refused`(_ identifier: String) {
+            #expect(throws: RFC_9557.Suffix.Error.invalidValue(identifier)) {
+                try RFC_9557.Suffix.Calendar(identifier)
+            }
+        }
+
+        @Test
+        func `an invalid time zone name is refused`() {
+            #expect(throws: RFC_9557.Suffix.Error.invalidTimeZoneName("..")) {
+                try RFC_9557.Suffix(timeZone: .iana("..", critical: false))
+            }
+        }
+
+        @Test
+        func `a repeated tag key is refused`() throws {
+            let first = try RFC_9557.Suffix.Tag(key: "foo", values: ["a"], critical: false)
+            let second = try RFC_9557.Suffix.Tag(key: "foo", values: ["b"], critical: false)
+            #expect(throws: RFC_9557.Suffix.Error.duplicateKey("foo")) {
+                try RFC_9557.Suffix(tags: [first, second])
+            }
+        }
+
+        @Test
+        func `a u-ca tag is refused beside the calendar`() throws {
+            let tag = try RFC_9557.Suffix.Tag(key: "u-ca", values: ["hebrew"], critical: false)
+            #expect(throws: RFC_9557.Suffix.Error.duplicateKey("u-ca")) {
+                try RFC_9557.Suffix(tags: [tag])
+            }
+        }
+
+        @Test
+        func `a built suffix parses back to itself`() throws {
+            let suffix = try RFC_9557.Suffix(
+                timeZone: .offset("+08:45", critical: true),
+                calendar: .critical("hebrew"),
+                tags: [RFC_9557.Suffix.Tag(key: "foo", values: ["a", "b"], critical: false)]
+            )
+            #expect(try RFC_9557.Suffix(suffix.rawValue) == suffix)
+        }
+    }
+}
+
+extension `RFC_9557.Suffix Tests`.Test {
+    @Suite
+    struct `Built Tag` {
+        @Test(arguments: [false, true])
+        func `an experimental key is refused`(_ critical: Bool) {
+            #expect(throws: RFC_9557.Suffix.Tag.Error.experimentalKey("_foo")) {
+                try RFC_9557.Suffix.Tag(key: "_foo", values: ["bar"], critical: critical)
+            }
+        }
+
+        @Test
+        func `a critical unregistered key is refused`() {
+            #expect(throws: RFC_9557.Suffix.Tag.Error.criticalTagNotSupported("knort")) {
+                try RFC_9557.Suffix.Tag(key: "knort", values: ["blargel"], critical: true)
+            }
+        }
+
+        @Test
+        func `a critical registered key is accepted`() throws {
+            let tag = try RFC_9557.Suffix.Tag(key: "u-ca", values: ["hebrew"], critical: true)
+            #expect(tag.critical)
         }
     }
 }
