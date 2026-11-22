@@ -1,11 +1,11 @@
 public import ASCII
 
-extension RFC_9557 {
+extension IETF.RFC.`9557` {
 
     public enum Validation {}
 }
 
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public static func validateSuffixKey(_ key: String) throws(ValidationError) {
         try validateSuffixKey([Byte](utf8: key))
@@ -58,7 +58,7 @@ extension RFC_9557.Validation {
     }
 }
 
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public static func validateSuffixValue(_ value: String) throws(ValidationError) {
         try validateSuffixValue([Byte](utf8: value))
@@ -87,7 +87,7 @@ extension RFC_9557.Validation {
     }
 }
 
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public static func validateTimeZoneName(_ name: String) throws(ValidationError) {
         try validateTimeZoneName([Byte](utf8: name))
@@ -154,7 +154,7 @@ extension RFC_9557.Validation {
     }
 }
 
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public static func validateTimeZoneOffset(_ offset: String) throws(ValidationError) {
         try validateTimeZoneOffset([Byte](utf8: offset))
@@ -187,7 +187,7 @@ extension RFC_9557.Validation {
     }
 }
 
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public static let registeredKeys: Set<String> = ["u-ca"]
 

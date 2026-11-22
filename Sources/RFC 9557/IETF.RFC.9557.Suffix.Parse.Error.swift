@@ -1,4 +1,4 @@
-extension RFC_9557.Suffix.Parse {
+extension IETF.RFC.`9557`.Suffix.Parse {
 
     public typealias Error = __SuffixParseError
 }

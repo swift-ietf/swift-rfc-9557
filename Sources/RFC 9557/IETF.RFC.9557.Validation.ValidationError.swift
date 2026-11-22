@@ -1,4 +1,4 @@
-extension RFC_9557.Validation {
+extension IETF.RFC.`9557`.Validation {
 
     public enum ValidationError: Swift::Error, Sendable {
         case invalidSuffixKey

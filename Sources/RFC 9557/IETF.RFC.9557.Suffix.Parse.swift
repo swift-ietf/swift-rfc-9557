@@ -1,6 +1,6 @@
 public import Parser
 
-extension RFC_9557.Suffix {
+extension IETF.RFC.`9557`.Suffix {
 
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
@@ -9,11 +9,11 @@ extension RFC_9557.Suffix {
     }
 }
 
-extension RFC_9557.Suffix.Parse {
+extension IETF.RFC.`9557`.Suffix.Parse {
     public typealias Output = [Annotation]
 }
 
-extension RFC_9557.Suffix.Parse: Parsing {
+extension IETF.RFC.`9557`.Suffix.Parse: Parsing {
 
     public typealias Failure = __SuffixParseError
     public typealias Body = Never

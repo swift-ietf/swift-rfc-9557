@@ -1,37 +1,37 @@
 public import ASCII
 public import Binary
 
-extension RFC_9557 {
+extension IETF.RFC.`9557` {
 
     public struct Timestamp: Sendable, Codable {
 
-        public let base: RFC_3339.DateTime
+        public let base: IETF.RFC.`3339`.DateTime
 
         public let suffix: Suffix?
 
-        private init(__unchecked: Void, base: RFC_3339.DateTime, suffix: Suffix?) {
+        private init(__unchecked: Void, base: IETF.RFC.`3339`.DateTime, suffix: Suffix?) {
             self.base = base
             self.suffix = suffix
         }
 
-        public init(base: RFC_3339.DateTime, suffix: Suffix? = nil) {
+        public init(base: IETF.RFC.`3339`.DateTime, suffix: Suffix? = nil) {
 
             self.init(__unchecked: (), base: base, suffix: suffix)
         }
     }
 }
 
-extension RFC_9557.Timestamp: Hashable {}
+extension IETF.RFC.`9557`.Timestamp: Hashable {}
 
-extension RFC_9557.Timestamp: ASCII.Serializable, Binary.Serializable {
+extension IETF.RFC.`9557`.Timestamp: ASCII.Serializable, Binary.Serializable {
 
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == ASCII.Code {
-        RFC_3339.DateTime.serialize(value.base, into: &buffer)
+        IETF.RFC.`3339`.DateTime.serialize(value.base, into: &buffer)
         if let suffix = value.suffix {
-            RFC_9557.Suffix.serialize(suffix, into: &buffer)
+            IETF.RFC.`9557`.Suffix.serialize(suffix, into: &buffer)
         }
     }
 
@@ -46,14 +46,14 @@ extension RFC_9557.Timestamp: ASCII.Serializable, Binary.Serializable {
         _ timestamp: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        RFC_3339.DateTime.serialize(timestamp.base, into: &buffer)
+        IETF.RFC.`3339`.DateTime.serialize(timestamp.base, into: &buffer)
         if let suffix = timestamp.suffix {
-            RFC_9557.Suffix.serialize(suffix, into: &buffer)
+            IETF.RFC.`9557`.Suffix.serialize(suffix, into: &buffer)
         }
     }
 }
 
-extension RFC_9557.Timestamp: ASCII.Parseable {
+extension IETF.RFC.`9557`.Timestamp: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
         try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
@@ -74,16 +74,16 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
             let basePart = bytes[..<bracketIndex]
             let suffixPart = bytes[bracketIndex...]
 
-            let base: RFC_3339.DateTime
-            do throws(RFC_3339.DateTime.Error) {
-                base = try RFC_3339.DateTime(ascii: basePart)
+            let base: IETF.RFC.`3339`.DateTime
+            do throws(IETF.RFC.`3339`.DateTime.Error) {
+                base = try IETF.RFC.`3339`.DateTime(ascii: basePart)
             } catch {
                 throw Error.invalidBase(String(decoding: basePart, as: UTF8.self))
             }
 
-            let suffix: RFC_9557.Suffix
-            do throws(RFC_9557.Suffix.Error) {
-                suffix = try RFC_9557.Suffix(ascii: suffixPart)
+            let suffix: IETF.RFC.`9557`.Suffix
+            do throws(IETF.RFC.`9557`.Suffix.Error) {
+                suffix = try IETF.RFC.`9557`.Suffix(ascii: suffixPart)
             } catch {
                 throw Error.invalidSuffix(error)
             }
@@ -91,9 +91,9 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
             self.init(__unchecked: (), base: base, suffix: suffix)
         } else {
 
-            let base: RFC_3339.DateTime
-            do throws(RFC_3339.DateTime.Error) {
-                base = try RFC_3339.DateTime(ascii: bytes)
+            let base: IETF.RFC.`3339`.DateTime
+            do throws(IETF.RFC.`3339`.DateTime.Error) {
+                base = try IETF.RFC.`3339`.DateTime(ascii: bytes)
             } catch {
                 throw Error.invalidBase(String(decoding: bytes, as: UTF8.self))
             }
@@ -103,7 +103,7 @@ extension RFC_9557.Timestamp: ASCII.Parseable {
     }
 }
 
-extension RFC_9557.Timestamp: Swift::RawRepresentable {
+extension IETF.RFC.`9557`.Timestamp: Swift::RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
@@ -119,7 +119,7 @@ extension RFC_9557.Timestamp: Swift::RawRepresentable {
     }
 }
 
-extension RFC_9557.Timestamp: CustomStringConvertible {
+extension IETF.RFC.`9557`.Timestamp: CustomStringConvertible {
 
     public var description: String {
         String(decoding: serialized, as: UTF8.self)

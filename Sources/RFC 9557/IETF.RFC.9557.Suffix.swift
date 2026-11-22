@@ -1,7 +1,7 @@
 public import ASCII
 public import Binary
 
-extension RFC_9557 {
+extension IETF.RFC.`9557` {
 
     public struct Suffix: Sendable, Codable {
 
@@ -37,14 +37,14 @@ extension RFC_9557 {
         private static func validate(_ timeZone: TimeZone) throws(Error) {
             switch timeZone {
             case .offset(let offset, _):
-                do throws(RFC_9557.Validation.ValidationError) {
-                    try RFC_9557.Validation.validateTimeZoneOffset(offset)
+                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                    try IETF.RFC.`9557`.Validation.validateTimeZoneOffset(offset)
                 } catch {
                     throw Error.invalidTimeZoneOffset(offset)
                 }
             case .iana(let name, _):
-                do throws(RFC_9557.Validation.ValidationError) {
-                    try RFC_9557.Validation.validateTimeZoneName(name)
+                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                    try IETF.RFC.`9557`.Validation.validateTimeZoneName(name)
                 } catch {
                     throw Error.invalidTimeZoneName(name)
                 }
@@ -53,9 +53,9 @@ extension RFC_9557 {
     }
 }
 
-extension RFC_9557.Suffix: Hashable {}
+extension IETF.RFC.`9557`.Suffix: Hashable {}
 
-extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
+extension IETF.RFC.`9557`.Suffix: ASCII.Serializable, Binary.Serializable {
 
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
@@ -83,7 +83,7 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
         }
 
         for tag in value.tags {
-            RFC_9557.Suffix.Tag.serialize(tag, into: &buffer)
+            IETF.RFC.`9557`.Suffix.Tag.serialize(tag, into: &buffer)
         }
     }
 
@@ -120,12 +120,12 @@ extension RFC_9557.Suffix: ASCII.Serializable, Binary.Serializable {
         }
 
         for tag in suffix.tags {
-            RFC_9557.Suffix.Tag.serialize(tag, into: &buffer)
+            IETF.RFC.`9557`.Suffix.Tag.serialize(tag, into: &buffer)
         }
     }
 }
 
-extension RFC_9557.Suffix: ASCII.Parseable {
+extension IETF.RFC.`9557`.Suffix: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
         try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
@@ -137,9 +137,9 @@ extension RFC_9557.Suffix: ASCII.Parseable {
             throw Error.empty
         }
 
-        var timeZone: RFC_9557.TimeZone? = nil
+        var timeZone: IETF.RFC.`9557`.TimeZone? = nil
         var calendar: Calendar? = nil
-        var tags: [RFC_9557.Suffix.Tag] = []
+        var tags: [IETF.RFC.`9557`.Suffix.Tag] = []
         var seenKeys = Set<String>()
 
         var index = bytes.startIndex
@@ -209,13 +209,13 @@ extension RFC_9557.Suffix: ASCII.Parseable {
 
                 let key = String(decoding: keyBytes, as: UTF8.self)
 
-                do throws(RFC_9557.Validation.ValidationError) {
-                    try RFC_9557.Validation.validateSuffixKey(key)
+                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                    try IETF.RFC.`9557`.Validation.validateSuffixKey(key)
                 } catch {
                     throw Error.invalidKey(key)
                 }
 
-                if RFC_9557.Validation.isExperimentalKey(key) {
+                if IETF.RFC.`9557`.Validation.isExperimentalKey(key) {
                     if critical {
                         throw Error.criticalExperimentalTag(key)
                     }
@@ -234,8 +234,8 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 values.append(String(decoding: vBytes[vStart..<vBytes.count], as: UTF8.self))
 
                 for value in values {
-                    do throws(RFC_9557.Validation.ValidationError) {
-                        try RFC_9557.Validation.validateSuffixValue(value)
+                    do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                        try IETF.RFC.`9557`.Validation.validateSuffixValue(value)
                     } catch {
                         throw Error.invalidValue(value)
                     }
@@ -248,13 +248,13 @@ extension RFC_9557.Suffix: ASCII.Parseable {
 
                 } else {
 
-                    if critical && !RFC_9557.Validation.isRegisteredKey(key) {
+                    if critical && !IETF.RFC.`9557`.Validation.isRegisteredKey(key) {
                         throw Error.criticalTagNotSupported(key)
                     }
 
                     if !seenKeys.contains(key) {
                         tags.append(
-                            RFC_9557.Suffix.Tag(
+                            IETF.RFC.`9557`.Suffix.Tag(
 
                                 __unchecked: (),
                                 key: key,
@@ -277,15 +277,15 @@ extension RFC_9557.Suffix: ASCII.Parseable {
                 if firstCharByte == ASCII.Code.plus.byte
                     || firstCharByte == ASCII.Code.hyphen.byte
                 {
-                    do throws(RFC_9557.Validation.ValidationError) {
-                        try RFC_9557.Validation.validateTimeZoneOffset(tzString)
+                    do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                        try IETF.RFC.`9557`.Validation.validateTimeZoneOffset(tzString)
                     } catch {
                         throw Error.invalidTimeZoneOffset(tzString)
                     }
                     timeZone = .offset(tzString, critical: critical)
                 } else {
-                    do throws(RFC_9557.Validation.ValidationError) {
-                        try RFC_9557.Validation.validateTimeZoneName(tzString)
+                    do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                        try IETF.RFC.`9557`.Validation.validateTimeZoneName(tzString)
                     } catch {
                         throw Error.invalidTimeZoneName(tzString)
                     }
@@ -300,7 +300,7 @@ extension RFC_9557.Suffix: ASCII.Parseable {
     }
 }
 
-extension RFC_9557.Suffix: Swift::RawRepresentable {
+extension IETF.RFC.`9557`.Suffix: Swift::RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
@@ -316,14 +316,14 @@ extension RFC_9557.Suffix: Swift::RawRepresentable {
     }
 }
 
-extension RFC_9557.Suffix: CustomStringConvertible {
+extension IETF.RFC.`9557`.Suffix: CustomStringConvertible {
 
     public var description: String {
         String(decoding: serialized, as: UTF8.self)
     }
 }
 
-extension RFC_9557.Suffix {
+extension IETF.RFC.`9557`.Suffix {
 
     public var hasCriticalComponents: Bool {
         if timeZone?.isCritical == true || calendar?.isCritical == true {

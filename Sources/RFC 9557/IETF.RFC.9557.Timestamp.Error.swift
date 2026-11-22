@@ -1,4 +1,4 @@
-extension RFC_9557.Timestamp {
+extension IETF.RFC.`9557`.Timestamp {
 
     public enum Error: Swift::Error, Sendable, Equatable {
 
@@ -6,11 +6,11 @@ extension RFC_9557.Timestamp {
 
         case invalidBase(_ value: String)
 
-        case invalidSuffix(_ error: RFC_9557.Suffix.Error)
+        case invalidSuffix(_ error: IETF.RFC.`9557`.Suffix.Error)
     }
 }
 
-extension RFC_9557.Timestamp.Error: CustomStringConvertible {
+extension IETF.RFC.`9557`.Timestamp.Error: CustomStringConvertible {
     public var description: String {
         switch self {
         case .empty:

@@ -1,4 +1,4 @@
-extension RFC_9557.Suffix {
+extension IETF.RFC.`9557`.Suffix {
 
     public enum Error: Swift::Error, Sendable, Equatable {
 
@@ -28,7 +28,7 @@ extension RFC_9557.Suffix {
     }
 }
 
-extension RFC_9557.Suffix.Error: CustomStringConvertible {
+extension IETF.RFC.`9557`.Suffix.Error: CustomStringConvertible {
     public var description: String {
         switch self {
         case .empty:

@@ -2,14 +2,14 @@ import Testing
 
 @testable import RFC_9557
 
-extension `RFC_9557.Timestamp Tests`.Test {
+extension `IETF.RFC.9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Time Zone` {
         @Test
         func `IANA time zone case sensitivity`() throws {
 
-            let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[Europe/Paris]")
-            let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[europe/paris]")
+            let ts1 = try IETF.RFC.`9557`.Timestamp("2022-07-08T00:14:07Z[Europe/Paris]")
+            let ts2 = try IETF.RFC.`9557`.Timestamp("2022-07-08T00:14:07Z[europe/paris]")
 
             #expect(ts1.suffix?.timeZone?.identifier == "Europe/Paris")
             #expect(ts2.suffix?.timeZone?.identifier == "europe/paris")
@@ -25,7 +25,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             ]
 
             for (input, expectedOffset) in inputs {
-                let ts = try RFC_9557.Timestamp(input)
+                let ts = try IETF.RFC.`9557`.Timestamp(input)
                 if case .offset(let offset, _) = ts.suffix?.timeZone {
                     #expect(offset == expectedOffset)
                 } else {
@@ -36,7 +36,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
 
         @Test
         func `Critical time zones`() throws {
-            let ts = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[!Europe/London]")
+            let ts = try IETF.RFC.`9557`.Timestamp("2022-07-08T00:14:07Z[!Europe/London]")
             #expect(ts.suffix?.timeZone?.isCritical == true)
         }
 
@@ -52,14 +52,14 @@ extension `RFC_9557.Timestamp Tests`.Test {
 
             for name in names {
                 let input = "2022-07-08T00:14:07Z[\(name)]"
-                let ts = try RFC_9557.Timestamp(input)
+                let ts = try IETF.RFC.`9557`.Timestamp(input)
                 #expect(ts.suffix?.timeZone?.identifier == name)
             }
         }
     }
 }
 
-extension `RFC_9557.Timestamp Tests`.Test {
+extension `IETF.RFC.9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Calendar` {
         @Test
@@ -70,7 +70,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
 
             for calendar in calendars {
                 let input = "2022-07-08T00:14:07Z[u-ca=\(calendar)]"
-                let ts = try RFC_9557.Timestamp(input)
+                let ts = try IETF.RFC.`9557`.Timestamp(input)
                 #expect(ts.suffix?.calendar?.identifier == calendar)
             }
         }
@@ -78,8 +78,8 @@ extension `RFC_9557.Timestamp Tests`.Test {
         @Test
         func `Calendar value case sensitivity`() throws {
 
-            let ts1 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=Hebrew]")
-            let ts2 = try RFC_9557.Timestamp("2022-07-08T00:14:07Z[u-ca=hebrew]")
+            let ts1 = try IETF.RFC.`9557`.Timestamp("2022-07-08T00:14:07Z[u-ca=Hebrew]")
+            let ts2 = try IETF.RFC.`9557`.Timestamp("2022-07-08T00:14:07Z[u-ca=hebrew]")
 
             #expect(ts1.suffix?.calendar?.identifier == "Hebrew")
             #expect(ts2.suffix?.calendar?.identifier == "hebrew")
@@ -88,13 +88,13 @@ extension `RFC_9557.Timestamp Tests`.Test {
     }
 }
 
-extension `RFC_9557.Timestamp Tests`.Test {
+extension `IETF.RFC.9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Complex Suffix` {
         @Test
         func `Time zone + calendar`() throws {
             let input = "1996-12-19T16:39:57-08:00[America/Los_Angeles][u-ca=hebrew]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.identifier == "America/Los_Angeles")
             #expect(ts.suffix?.calendar?.identifier == "hebrew")
@@ -103,7 +103,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         @Test
         func `Time zone + calendar + custom tags`() throws {
             let input = "2022-07-08T00:14:07Z[Europe/Paris][u-ca=gregory][foo=bar][baz=qux]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.identifier == "Europe/Paris")
             #expect(ts.suffix?.calendar?.identifier == "gregory")
@@ -113,7 +113,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         @Test
         func `Multi-value suffix tags`() throws {
             let input = "2022-07-08T00:14:07Z[foo=bar-baz-qux]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.suffix?.tags.count == 1)
             #expect(ts.suffix?.tags.first?.values == ["bar", "baz", "qux"])
@@ -122,7 +122,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         @Test
         func `Critical and elective tags mixed`() throws {
             let input = "2022-07-08T00:14:07Z[!u-ca=hebrew][foo=bar]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.suffix?.calendar?.identifier == "hebrew")
             #expect(ts.suffix?.tags.count == 1)
@@ -133,7 +133,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         func `Maximum complexity suffix`() throws {
             let input =
                 "1996-12-19T16:39:57-08:00[!America/Los_Angeles][!u-ca=hebrew][foo=bar-baz][qux=test]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.suffix?.timeZone?.isCritical == true)
             #expect(ts.suffix?.calendar?.identifier == "hebrew")
@@ -143,7 +143,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
     }
 }
 
-extension `RFC_9557.Timestamp Tests`.Test {
+extension `IETF.RFC.9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases RFC 3339 Compatibility` {
         @Test
@@ -156,7 +156,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
             ]
 
             for input in inputs {
-                let ts = try RFC_9557.Timestamp(input)
+                let ts = try IETF.RFC.`9557`.Timestamp(input)
                 #expect(ts.suffix == nil)
             }
         }
@@ -164,7 +164,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         @Test
         func `Fractional seconds with suffix`() throws {
             let input = "1985-04-12T23:20:50.52Z[America/New_York]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.base.time.second.value == 50)
             #expect(ts.suffix?.timeZone?.identifier == "America/New_York")
@@ -172,8 +172,8 @@ extension `RFC_9557.Timestamp Tests`.Test {
 
         @Test
         func `Leap second with suffix is refused`() {
-            #expect(throws: RFC_9557.Timestamp.Error.invalidBase("1990-12-31T23:59:60Z")) {
-                _ = try RFC_9557.Timestamp("1990-12-31T23:59:60Z[UTC]")
+            #expect(throws: IETF.RFC.`9557`.Timestamp.Error.invalidBase("1990-12-31T23:59:60Z")) {
+                _ = try IETF.RFC.`9557`.Timestamp("1990-12-31T23:59:60Z[UTC]")
             }
         }
 
@@ -181,7 +181,7 @@ extension `RFC_9557.Timestamp Tests`.Test {
         func `Z offset with time zone (no inconsistency)`() throws {
 
             let input = "2022-07-08T00:14:07Z[Europe/Paris]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
 
             #expect(ts.base.offset == .utc)
             #expect(ts.suffix?.timeZone?.identifier == "Europe/Paris")
@@ -189,20 +189,20 @@ extension `RFC_9557.Timestamp Tests`.Test {
     }
 }
 
-extension `RFC_9557.Timestamp Tests`.Test {
+extension `IETF.RFC.9557.Timestamp Tests`.Test {
     @Suite
     struct `Edge Cases Minimal Input` {
         @Test
         func `Single character time zone`() throws {
             let input = "2022-07-08T00:14:07Z[Z]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
             #expect(ts.suffix?.timeZone?.identifier == "Z")
         }
 
         @Test
         func `Single character key and value`() throws {
             let input = "2022-07-08T00:14:07Z[a=b]"
-            let ts = try RFC_9557.Timestamp(input)
+            let ts = try IETF.RFC.`9557`.Timestamp(input)
             #expect(ts.suffix?.tags.first?.key == "a")
             #expect(ts.suffix?.tags.first?.values == ["b"])
         }

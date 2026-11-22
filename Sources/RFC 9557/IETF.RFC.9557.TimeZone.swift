@@ -1,4 +1,4 @@
-extension RFC_9557 {
+extension IETF.RFC.`9557` {
 
     public enum TimeZone: Sendable, Codable, Hashable {
 
@@ -8,7 +8,7 @@ extension RFC_9557 {
     }
 }
 
-extension RFC_9557.TimeZone {
+extension IETF.RFC.`9557`.TimeZone {
 
     public var isCritical: Bool {
         switch self {
@@ -25,7 +25,7 @@ extension RFC_9557.TimeZone {
     }
 }
 
-extension RFC_9557.TimeZone: CustomStringConvertible {
+extension IETF.RFC.`9557`.TimeZone: CustomStringConvertible {
     public var description: String {
         let prefix = isCritical ? "!" : ""
         return "\(prefix)\(identifier)"

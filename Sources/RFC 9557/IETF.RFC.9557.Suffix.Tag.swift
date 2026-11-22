@@ -1,7 +1,7 @@
 public import ASCII
 public import Binary
 
-extension RFC_9557.Suffix {
+extension IETF.RFC.`9557`.Suffix {
 
     public struct Tag: Sendable, Codable {
 
@@ -22,17 +22,17 @@ extension RFC_9557.Suffix {
                 throw Error.emptyKey
             }
 
-            do throws(RFC_9557.Validation.ValidationError) {
-                try RFC_9557.Validation.validateSuffixKey(key)
+            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                try IETF.RFC.`9557`.Validation.validateSuffixKey(key)
             } catch {
                 throw Error.invalidKey(key)
             }
 
-            guard !RFC_9557.Validation.isExperimentalKey(key) else {
+            guard !IETF.RFC.`9557`.Validation.isExperimentalKey(key) else {
                 throw Error.experimentalKey(key)
             }
 
-            guard !critical || RFC_9557.Validation.isRegisteredKey(key) else {
+            guard !critical || IETF.RFC.`9557`.Validation.isRegisteredKey(key) else {
                 throw Error.criticalTagNotSupported(key)
             }
 
@@ -44,8 +44,8 @@ extension RFC_9557.Suffix {
                 guard !value.isEmpty else {
                     throw Error.invalidValue("")
                 }
-                do throws(RFC_9557.Validation.ValidationError) {
-                    try RFC_9557.Validation.validateSuffixValue(value)
+                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                    try IETF.RFC.`9557`.Validation.validateSuffixValue(value)
                 } catch {
                     throw Error.invalidValue(value)
                 }
@@ -56,9 +56,9 @@ extension RFC_9557.Suffix {
     }
 }
 
-extension RFC_9557.Suffix.Tag: Hashable {}
+extension IETF.RFC.`9557`.Suffix.Tag: Hashable {}
 
-extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
+extension IETF.RFC.`9557`.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
 
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
@@ -110,7 +110,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Serializable, Binary.Serializable {
     }
 }
 
-extension RFC_9557.Suffix.Tag: ASCII.Parseable {
+extension IETF.RFC.`9557`.Suffix.Tag: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
         try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
@@ -186,7 +186,7 @@ extension RFC_9557.Suffix.Tag: ASCII.Parseable {
     }
 }
 
-extension RFC_9557.Suffix.Tag: Swift::RawRepresentable {
+extension IETF.RFC.`9557`.Suffix.Tag: Swift::RawRepresentable {
     public typealias RawValue = String
 
     public var rawValue: String {
@@ -202,7 +202,7 @@ extension RFC_9557.Suffix.Tag: Swift::RawRepresentable {
     }
 }
 
-extension RFC_9557.Suffix.Tag: CustomStringConvertible {
+extension IETF.RFC.`9557`.Suffix.Tag: CustomStringConvertible {
 
     public var description: String {
         String(decoding: serialized, as: UTF8.self)

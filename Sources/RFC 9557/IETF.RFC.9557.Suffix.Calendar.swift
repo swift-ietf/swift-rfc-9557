@@ -1,4 +1,4 @@
-extension RFC_9557.Suffix {
+extension IETF.RFC.`9557`.Suffix {
 
     public struct Calendar: Sendable, Codable, Hashable {
 
@@ -12,8 +12,8 @@ extension RFC_9557.Suffix {
         }
 
         public init(_ identifier: String) throws(Error) {
-            do throws(RFC_9557.Validation.ValidationError) {
-                try RFC_9557.Validation.validateSuffixValue(identifier)
+            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                try IETF.RFC.`9557`.Validation.validateSuffixValue(identifier)
             } catch {
                 throw Error.invalidValue(identifier)
             }
@@ -27,7 +27,7 @@ extension RFC_9557.Suffix {
     }
 }
 
-extension RFC_9557.Suffix.Calendar: CustomStringConvertible {
+extension IETF.RFC.`9557`.Suffix.Calendar: CustomStringConvertible {
     public var description: String {
         let prefix = isCritical ? "!" : ""
         return "\(prefix)\(identifier)"
