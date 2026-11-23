@@ -16,38 +16,41 @@ extension IETF.RFC.`9557` {
             self.calendar = calendar
             self.tags = tags
         }
+    }
+}
 
-        public init(
-            timeZone: TimeZone? = nil,
-            calendar: Calendar? = nil,
-            tags: [Suffix.Tag] = []
-        ) throws(Error) {
-            if let timeZone {
-                try Self.validate(timeZone)
-            }
-            var seenKeys: Set<String> = ["u-ca"]
-            for tag in tags {
-                guard seenKeys.insert(tag.key).inserted else {
-                    throw Error.duplicateKey(tag.key)
-                }
-            }
-            self.init(__unchecked: (), timeZone: timeZone, calendar: calendar, tags: tags)
+extension IETF.RFC.`9557`.Suffix {
+
+    public init(
+        timeZone: IETF.RFC.`9557`.TimeZone? = nil,
+        calendar: Calendar? = nil,
+        tags: [Tag] = []
+    ) throws(Error) {
+        if let timeZone {
+            try Self.validate(timeZone)
         }
+        var seenKeys: Set<String> = ["u-ca"]
+        for tag in tags {
+            guard seenKeys.insert(tag.key).inserted else {
+                throw Error.duplicateKey(tag.key)
+            }
+        }
+        self.init(__unchecked: (), timeZone: timeZone, calendar: calendar, tags: tags)
+    }
 
-        private static func validate(_ timeZone: TimeZone) throws(Error) {
-            switch timeZone {
-            case .offset(let offset, _):
-                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
-                    try IETF.RFC.`9557`.Validation.validateTimeZoneOffset(offset)
-                } catch {
-                    throw Error.invalidTimeZoneOffset(offset)
-                }
-            case .iana(let name, _):
-                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
-                    try IETF.RFC.`9557`.Validation.validateTimeZoneName(name)
-                } catch {
-                    throw Error.invalidTimeZoneName(name)
-                }
+    private static func validate(_ timeZone: IETF.RFC.`9557`.TimeZone) throws(Error) {
+        switch timeZone {
+        case .offset(let offset, _):
+            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                try IETF.RFC.`9557`.Validation.validateTimeZoneOffset(offset)
+            } catch {
+                throw Error.invalidTimeZoneOffset(offset)
+            }
+        case .iana(let name, _):
+            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                try IETF.RFC.`9557`.Validation.validateTimeZoneName(name)
+            } catch {
+                throw Error.invalidTimeZoneName(name)
             }
         }
     }

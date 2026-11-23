@@ -10,20 +10,23 @@ extension IETF.RFC.`9557`.Suffix {
             self.identifier = identifier
             self.isCritical = isCritical
         }
+    }
+}
 
-        public init(_ identifier: String) throws(Error) {
-            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
-                try IETF.RFC.`9557`.Validation.validateSuffixValue(identifier)
-            } catch {
-                throw Error.invalidValue(identifier)
-            }
-            self.init(__unchecked: (), identifier: identifier, isCritical: false)
-        }
+extension IETF.RFC.`9557`.Suffix.Calendar {
 
-        public static func critical(_ identifier: String) throws(Error) -> Self {
-            let elective = try Self(identifier)
-            return Self(__unchecked: (), identifier: elective.identifier, isCritical: true)
+    public init(_ identifier: String) throws(IETF.RFC.`9557`.Suffix.Error) {
+        do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+            try IETF.RFC.`9557`.Validation.validateSuffixValue(identifier)
+        } catch {
+            throw IETF.RFC.`9557`.Suffix.Error.invalidValue(identifier)
         }
+        self.init(__unchecked: (), identifier: identifier, isCritical: false)
+    }
+
+    public static func critical(_ identifier: String) throws(IETF.RFC.`9557`.Suffix.Error) -> Self {
+        let elective = try Self(identifier)
+        return Self(__unchecked: (), identifier: elective.identifier, isCritical: true)
     }
 }
 

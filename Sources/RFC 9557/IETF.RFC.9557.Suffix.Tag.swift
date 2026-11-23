@@ -16,43 +16,46 @@ extension IETF.RFC.`9557`.Suffix {
             self.values = values
             self.critical = critical
         }
+    }
+}
 
-        public init(key: String, values: [String], critical: Bool) throws(Error) {
-            guard !key.isEmpty else {
-                throw Error.emptyKey
-            }
+extension IETF.RFC.`9557`.Suffix.Tag {
 
-            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
-                try IETF.RFC.`9557`.Validation.validateSuffixKey(key)
-            } catch {
-                throw Error.invalidKey(key)
-            }
-
-            guard !IETF.RFC.`9557`.Validation.isExperimentalKey(key) else {
-                throw Error.experimentalKey(key)
-            }
-
-            guard !critical || IETF.RFC.`9557`.Validation.isRegisteredKey(key) else {
-                throw Error.criticalTagNotSupported(key)
-            }
-
-            guard !values.isEmpty else {
-                throw Error.emptyValues
-            }
-
-            for value in values {
-                guard !value.isEmpty else {
-                    throw Error.invalidValue("")
-                }
-                do throws(IETF.RFC.`9557`.Validation.ValidationError) {
-                    try IETF.RFC.`9557`.Validation.validateSuffixValue(value)
-                } catch {
-                    throw Error.invalidValue(value)
-                }
-            }
-
-            self.init(__unchecked: (), key: key, values: values, critical: critical)
+    public init(key: String, values: [String], critical: Bool) throws(Error) {
+        guard !key.isEmpty else {
+            throw Error.emptyKey
         }
+
+        do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+            try IETF.RFC.`9557`.Validation.validateSuffixKey(key)
+        } catch {
+            throw Error.invalidKey(key)
+        }
+
+        guard !IETF.RFC.`9557`.Validation.isExperimentalKey(key) else {
+            throw Error.experimentalKey(key)
+        }
+
+        guard !critical || IETF.RFC.`9557`.Validation.isRegisteredKey(key) else {
+            throw Error.criticalTagNotSupported(key)
+        }
+
+        guard !values.isEmpty else {
+            throw Error.emptyValues
+        }
+
+        for value in values {
+            guard !value.isEmpty else {
+                throw Error.invalidValue("")
+            }
+            do throws(IETF.RFC.`9557`.Validation.ValidationError) {
+                try IETF.RFC.`9557`.Validation.validateSuffixValue(value)
+            } catch {
+                throw Error.invalidValue(value)
+            }
+        }
+
+        self.init(__unchecked: (), key: key, values: values, critical: critical)
     }
 }
 

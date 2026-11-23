@@ -13,11 +13,14 @@ extension IETF.RFC.`9557` {
             self.base = base
             self.suffix = suffix
         }
+    }
+}
 
-        public init(base: IETF.RFC.`3339`.DateTime, suffix: Suffix? = nil) {
+extension IETF.RFC.`9557`.Timestamp {
 
-            self.init(__unchecked: (), base: base, suffix: suffix)
-        }
+    public init(base: IETF.RFC.`3339`.DateTime, suffix: IETF.RFC.`9557`.Suffix? = nil) {
+
+        self.init(__unchecked: (), base: base, suffix: suffix)
     }
 }
 
